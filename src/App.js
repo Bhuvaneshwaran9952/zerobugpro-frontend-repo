@@ -21,7 +21,7 @@ import TrainerPayment from './Component/TrainerPayment/TrainerPayment';
 import TrainerPaymentForm from './Component/TrainerPayment/TrainerPaymentForm';
 import TrainerPaymentUpdate from './Component/TrainerPayment/TrainerPaymentUpdate';
 
-
+console.log('test git');
 function App() {
   return (
     <Provider store={Store}>
