@@ -35,9 +35,11 @@ const TrainerUserList = () => {
 
   return (
     <Container>
-      <div className="card-header mb-3">
-        <Link to="/trainer/traineruserlist" className="btn btn-warning">Add Trainer [+]</Link>
-      </div>
+
+        <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
+          <h2 className="mb-0">Trainer List</h2>
+          <Link to="/trainer/traineruserlist" className="btn btn-warning">Add Trainer  [+]</Link>
+        </div>
 
       {/* Desktop Table View */}
       <div className="d-none d-md-block">
