@@ -1,0 +1,11 @@
+.custom-table {
+    border: 1px solid #dee2e6;
+    box-shadow: none;
+  }
+  
+  .custom-table th, 
+  .custom-table td {
+    border: 1px solid #dee2e6; 
+    background-color: transparent !important; 
+  }
+  
