@@ -17,15 +17,18 @@ const UpdateUser = () => {
     const [dateTime, setDateTime] = useState("");
     const [selectCity, setSelectCity] = useState("");
     const [address, setAddress] = useState("");
-    
+    const [status, setStatus] = useState("");
+    const [certificate, setCertificate] = useState("")
+
     const userobj = useSelector((state) => state.user.userobj);
+    console.log("userobj is:", userobj, typeof userobj);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { code } = useParams();
 
     useEffect(() => {
         dispatch(FetchUserObj(code));
-    }, [dispatch, code]);
+      }, [dispatch, code]);
 
     useEffect(() => {
         if (userobj) {
@@ -38,6 +41,8 @@ const UpdateUser = () => {
             setDateTime(userobj.dateTime);
             setPayment(userobj.payment);
             setAddress(userobj.address);
+            setStatus(userobj.status);
+            setCertificate(userobj.certificate);
         }
     }, [userobj]);
 
@@ -54,7 +59,7 @@ const UpdateUser = () => {
             alert("Please select a date and time.");
             return;
         }
-        const updatedUser = { id, name, email, phone, course, selectCity, dateTime, payment, address };
+        const updatedUser = { id, name, email, phone, course, selectCity, dateTime, payment, address, answer, status, certificate };
         dispatch(FunctionUpdateUser(updatedUser, id));
         navigate("/studentlist");
     };
@@ -122,12 +127,97 @@ const UpdateUser = () => {
                                             </Form.Select>
                                         </Form.Group>
                                     </Col>
+
+                                    <Form.Group>
+                                        <Form.Label>Do you need a demo class?</Form.Label>
+                                        <div>
+                                            <Form.Check
+                                                inline
+                                                type="radio"
+                                                label="Yes"
+                                                value="Yes"
+                                                checked={answer === "Yes"}
+                                                onChange={handleAnswerChange}
+                                                name="demo"
+                                            />
+                                            <Form.Check
+                                                inline
+                                                type="radio"
+                                                label="No"
+                                                value="No"
+                                                checked={answer === "No"}
+                                                onChange={handleAnswerChange}
+                                                name="demo"
+                                            />
+                                        </div>
+                                    </Form.Group>
+
+                                    {answer === "Yes" && (
+                                        <Form.Group>
+                                            <Form.Label>Select Date & Time</Form.Label>
+                                            <Form.Control
+                                                type="datetime-local"
+                                                value={dateTime || ""}
+                                                onChange={e => setDateTime(e.target.value)}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    )}
+
+                                    <Form.Group>
+                                        <Form.Label>Payment Method</Form.Label>
+                                        <Form.Select
+                                            value={payment || ""}
+                                            onChange={e => setPayment(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Select a payment method</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Card">Card</option>
+                                            <option value="UPI">UPI</option>
+                                            <option value="Card">Bank Transfer</option>
+                                        </Form.Select>
+                                    </Form.Group>
+
                                     <Col xs={12}>
                                         <Form.Group>
                                             <Form.Label>Address</Form.Label>
                                             <Form.Control as="textarea" rows={2} value={address || ""} onChange={e => setAddress(e.target.value)} required />
                                         </Form.Group>
                                     </Col>
+
+                                    <Form.Group>
+                                        <Form.Label>Student Status</Form.Label>
+                                        <Form.Select value={status || ""} onChange={e => setStatus(e.target.value)} required>
+                                            <option value="">Select a status</option>
+                                            <option value="Enrolled">Enrolled</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Completed">Completed</option>
+                                        </Form.Select>
+                                    </Form.Group>
+
+                                    <Form.Group>
+                                        <Form.Label>Do you need a certificate?</Form.Label>
+                                        <div>
+                                        <Form.Check
+                                            inline
+                                            type="radio"
+                                            value="Yes"
+                                            label="Yes"
+                                            checked={certificate === "Yes"}
+                                            onChange={(e) => setCertificate(e.target.value)}
+                                            name="certificate"/>
+
+                                        <Form.Check
+                                            inline
+                                            type="radio"
+                                            value="No"
+                                            label="No"
+                                            checked={certificate === "No"}
+                                            onChange={(e) => setCertificate(e.target.value)}/>
+                                        </div>
+                                    </Form.Group>
+
                                 </Row>
                                 <div className="d-flex justify-content-between mt-3">
                                     <Button type="submit" variant="primary">Update</Button>

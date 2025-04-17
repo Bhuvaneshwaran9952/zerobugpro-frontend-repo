@@ -43,10 +43,11 @@ const Userlist = (props) => {
                                         <th>Phone</th>
                                         <th>Course</th>
                                         <th>City</th>
-                                        {/* <th>Answer</th> */}
                                         <th>Date & Time</th>
                                         <th>Payment Method</th>
                                         <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Certificate</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -59,10 +60,11 @@ const Userlist = (props) => {
                                             <td>{item.phone}</td>
                                             <td>{item.course}</td>
                                             <td>{item.selectCity}</td>
-                                            {/* <td>{item.answer}</td> */}
                                             <td>{item.dateTime}</td>
                                             <td>{item.payment}</td>
                                             <td>{item.address}</td>
+                                            <td>{item.status}</td>
+                                            <td>{item.certificate}</td>
                                             <td className="text-center">
                                                 <Link to={'/studentlist/edit/' + item.id} className="btn btn-primary me-2">Edit</Link>
                                                 <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}>Delete</Button>
@@ -85,10 +87,11 @@ const Userlist = (props) => {
                                                 <strong>Phone:</strong> {item.phone} <br />
                                                 <strong>Course:</strong> {item.course} <br />
                                                 <strong>City:</strong> {item.selectCity} <br />
-                                                {/* <strong>Answer:</strong> {item.answer} New Data Field */}
                                                 <strong>Date & Time:</strong> {item.dateTime} <br />
                                                 <strong>Payment Method:</strong> {item.payment} <br />
                                                 <strong>Address:</strong> {item.address} <br />
+                                                <strong>Status:</strong> {item.status} <br />
+                                                <strong>Certificate:</strong> {item.certificate} <br />
                                             </Card.Text>
                                             <Row>
                                                 <Col>
