@@ -20,6 +20,9 @@ import PaymentUpdate from './Component/StudentPayment/PaymentUpdate';
 import TrainerPayment from './Component/TrainerPayment/TrainerPayment';
 import TrainerPaymentForm from './Component/TrainerPayment/TrainerPaymentForm';
 import TrainerPaymentUpdate from './Component/TrainerPayment/TrainerPaymentUpdate';
+import RefundList from './Component/Refund/RefundList';
+import RefundForm from './Component/Refund/RefundForm';
+import RefundUpdate from './Component/Refund/RefundUpdate';
 
 function App() {
   return (
@@ -45,6 +48,9 @@ function App() {
             <Route path='/trainerpayment' element={<TrainerPayment/>}/>
             <Route path='/trainerpaymentform' element={<TrainerPaymentForm/>}/>
             <Route path='/trainerpaymentupdate/:id' element={<TrainerPaymentUpdate/>}/>
+            <Route path='/refundlist' element={<RefundList/>}/>
+            <Route path='/refundform' element={<RefundForm/>}/>
+            <Route path='/refundupdate/:id' element={<RefundUpdate/>}/>
           </Routes>
         </BrowserRouter>
         <ToastContainer className="toast-position"

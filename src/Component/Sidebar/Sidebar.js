@@ -3,7 +3,6 @@ import './sidebar.css';
 import { Navbar, Nav, Button, Offcanvas } from "react-bootstrap";
 import { IoHomeSharp } from "react-icons/io5";  
 import { FaUserAlt } from "react-icons/fa";
-import { SiLinuxserver } from "react-icons/si";
 import { FaMobileScreen } from "react-icons/fa6";
 import { MdInsertChart } from "react-icons/md";
 import { IoNotificationsCircle } from "react-icons/io5";
@@ -14,6 +13,7 @@ import { MdAccountCircle } from "react-icons/md";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdOutlinePayment } from "react-icons/md";
 import { SiTrainerroad } from "react-icons/si";
+import { TbCreditCardRefund } from "react-icons/tb";
 import { Link } from "react-router-dom"; 
 
 const Sidebar = () => {
@@ -44,7 +44,7 @@ const Sidebar = () => {
                         <Nav.Link to="/trainer" as={Link} className="sidebar-item"><SiTrainerroad className="icon"/> Trainer List</Nav.Link>
                         <Nav.Link to="/paymentdetails" as={Link} className="sidebar-item"><MdOutlinePayment className="icon"/> Student Payment </Nav.Link>
                         <Nav.Link to="/trainerpayment" as={Link} className="sidebar-item"><MdOutlinePayment className="icon"/> Trainer Payment</Nav.Link>
-                        <Nav.Link as={Link}  className="sidebar-item"><FaMobileScreen className="icon"/> Contact</Nav.Link>
+                        <Nav.Link to="/refundlist" as={Link}  className="sidebar-item"><TbCreditCardRefund className="icon"/> Refund List</Nav.Link>
 
                         <p className="sidebar-section">Useful</p>
                         <Nav.Link as={Link}  className="sidebar-item"><MdInsertChart className="icon"/> Stats</Nav.Link>

@@ -37,10 +37,10 @@ const TrainerPayment = () =>{
 
     return(
   <Container className="mt-4">
-      <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
-        <h2 className="mb-0">Trainer Payment List</h2>
-        <Link to="/trainerpaymentform" className="btn btn-warning">Add [+]</Link>
-      </div>
+        <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
+          <h2 className="mb-0">Trainer Payment List</h2>
+          <Link to="/trainerpaymentform" className="btn btn-warning">Add [+]</Link>
+        </div>
 
       {/* Table View for Larger Screens */}
       <div className="d-none d-md-block">
