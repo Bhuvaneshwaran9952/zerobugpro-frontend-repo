@@ -3,9 +3,7 @@ import './sidebar.css';
 import { Navbar, Nav, Button, Offcanvas } from "react-bootstrap";
 import { IoHomeSharp } from "react-icons/io5";  
 import { FaUserAlt } from "react-icons/fa";
-import { FaMobileScreen } from "react-icons/fa6";
-import { MdInsertChart } from "react-icons/md";
-import { IoNotificationsCircle } from "react-icons/io5";
+import { FaInvision } from "react-icons/fa";
 import { GrSystem } from "react-icons/gr";
 import { MdPsychology } from "react-icons/md";
 import { MdOutlineSettingsApplications } from "react-icons/md";
@@ -14,6 +12,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { MdOutlinePayment } from "react-icons/md";
 import { SiTrainerroad } from "react-icons/si";
 import { TbCreditCardRefund } from "react-icons/tb";
+import { FaCcAmazonPay } from "react-icons/fa";
 import { Link } from "react-router-dom"; 
 
 const Sidebar = () => {
@@ -47,8 +46,8 @@ const Sidebar = () => {
                         <Nav.Link to="/refundlist" as={Link}  className="sidebar-item"><TbCreditCardRefund className="icon"/> Refund List</Nav.Link>
 
                         <p className="sidebar-section">Useful</p>
-                        <Nav.Link as={Link}  className="sidebar-item"><MdInsertChart className="icon"/> Stats</Nav.Link>
-                        <Nav.Link as={Link}  className="sidebar-item"><IoNotificationsCircle className="icon"/> Notification</Nav.Link>
+                        <Nav.Link to="/paymentrepeated" as={Link}  className="sidebar-item"><FaCcAmazonPay className="icon"/> Pay</Nav.Link>
+                        <Nav.Link to="/interviewcards" as={Link}  className="sidebar-item"><FaInvision  className="icon"/> Interview Detials</Nav.Link>
 
                         <p className="sidebar-section">Service</p>
                         <Nav.Link as={Link}  className="sidebar-item"><GrSystem className="icon"/> System Health</Nav.Link>

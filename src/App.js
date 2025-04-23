@@ -23,6 +23,11 @@ import TrainerPaymentUpdate from './Component/TrainerPayment/TrainerPaymentUpdat
 import RefundList from './Component/Refund/RefundList';
 import RefundForm from './Component/Refund/RefundForm';
 import RefundUpdate from './Component/Refund/RefundUpdate';
+import PaymentRepeated from './Component/PaymentRepeated/PaymentRepeated';
+import RepeatedForm from './Component/PaymentRepeated/RepeatedForm';
+import RepeatedTotal from './Component/PaymentRepeated/RepeatedTotal';
+import InterviewCards from './Component/Interview/InterviewCards';
+import InterviewDetails from './Component/Interview/InterviewDetails'
 
 function App() {
   return (
@@ -51,6 +56,11 @@ function App() {
             <Route path='/refundlist' element={<RefundList/>}/>
             <Route path='/refundform' element={<RefundForm/>}/>
             <Route path='/refundupdate/:id' element={<RefundUpdate/>}/>
+            <Route path='/paymentrepeated' element={<PaymentRepeated/>}/>
+            <Route path='/repeatedform' element={<RepeatedForm/>}/>
+            <Route path='/repeatedtotal' element={<RepeatedTotal/>}/>
+            <Route path='/interviewcards' element={<InterviewCards/>}/>
+            <Route path='/interview/:id' element={<InterviewDetails/>}/>
           </Routes>
         </BrowserRouter>
         <ToastContainer className="toast-position"
