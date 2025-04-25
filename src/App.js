@@ -27,8 +27,8 @@ import PaymentRepeated from './Component/PaymentRepeated/PaymentRepeated';
 import RepeatedForm from './Component/PaymentRepeated/RepeatedForm';
 import RepeatedTotal from './Component/PaymentRepeated/RepeatedTotal';
 import InterviewCards from './Component/Interview/InterviewCards';
-import InterviewDetails from './Component/Interview/InterviewDetails'
-
+import InterviewDetails from './Component/Interview/InterviewDetails';
+import AddInterview from './Component/Interview/AddInterview';
 function App() {
   return (
     <Provider store={Store}>
@@ -61,6 +61,7 @@ function App() {
             <Route path='/repeatedtotal' element={<RepeatedTotal/>}/>
             <Route path='/interviewcards' element={<InterviewCards/>}/>
             <Route path='/interview/:id' element={<InterviewDetails/>}/>
+            <Route path='/add-interview' element={<AddInterview/>}/>
           </Routes>
         </BrowserRouter>
         <ToastContainer className="toast-position"

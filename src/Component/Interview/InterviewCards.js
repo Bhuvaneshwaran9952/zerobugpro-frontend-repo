@@ -1,95 +1,80 @@
 import React, { useState, useEffect } from "react";
-import { Card, Container, Row, Col, Button, Badge } from "react-bootstrap";
+import { Card, Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import './InterviewCard.css';
-
-// Import images
-import googleImage from '../../Images/google.jpg';
-import itImage from '../../Images/It.png';
-import neotericImage from '../../Images/neoteric.jpg';
-// You can import more images as needed
+import axios from "axios";
+import './InterviewCard.css'; // Importing the custom CSS
 
 const InterviewCards = () => {
-  const [interviews, setInterviews] = useState([]);
-  const [expandedCardId, setExpandedCardId] = useState(null);
-  const navigate = useNavigate();
-  const today = new Date();
+  const [interviewData, setInterviewData] = useState([]); // State to hold interview data
+  const [loading, setLoading] = useState(true); // State to show loading text
+  const [error, setError] = useState(null); // State to hold any errors
+  const navigate = useNavigate(); // For navigation to detailed interview view
 
   useEffect(() => {
-    // Fetch data from backend API
     const fetchInterviews = async () => {
       try {
-        const res = await fetch("http://localhost:8000/interviews/");
-        const data = await res.json();
-        setInterviews(data);
-      } catch (error) {
-        console.error("Failed to load interviews:", error);
+        // Fetch interview data from the backend (API)
+        const response = await axios.get("http://127.0.0.1:8000/interviews/");
+        setInterviewData(response.data); // Update state with the fetched data
+        setLoading(false); // Set loading to false once data is fetched
+      } catch (err) {
+        setError("Error fetching data"); // Handle errors
+        setLoading(false); // Set loading to false if error occurs
       }
     };
 
-    fetchInterviews();
+    fetchInterviews(); // Fetch interviews when component mounts
   }, []);
 
-  const toggleCard = (id) => {
-    setExpandedCardId(expandedCardId === id ? null : id);
-  };
+  // If data is still loading, display loading message
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  // Function to dynamically get the image for each card based on interview company or some identifier
-  const getImageForCard = (companyName) => {
-    if (companyName === "Google") {
-      return googleImage;
-    }
-    if (companyName === "Microsoft") {
-      return itImage;
-    }
-    if (companyName === "Amazon") {
-      return neotericImage;
-    }
-    return null; 
-  };
+  // If there is an error fetching data, display error message
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <Container className="mt-4">
-      <Row>
-        {interviews.map((item) => {
-          const interviewDate = new Date(item.date);
-          const isExpired = interviewDate < today;
+      <div className="d-flex justify-content-between align-items-center mb-3 bg-secondary p-3">
+        <h3 style={{ color: "white" }}>Upcoming Interviews</h3>
+        <Button variant="success" onClick={() => navigate('/add-interview')}>
+          + Add Interview
+        </Button>
+      </div>
 
-          return (
-            <Col key={item.id} md={4} sm={6} className="mb-4">
-              <Card className={`interview-card mb-3 ${isExpired ? 'expired-card' : ''}`}>
-                {/* Display image dynamically based on company */}
-                <Card.Img
-                  variant="top"
-                  src={getImageForCard(item.company)} 
-                  alt={`${item.company} Logo`}
-                  style={{ height: "120px", objectFit: "contain", padding: "1rem" }}
-                />
-                <Card.Body>
-                  <Card.Title>
-                    {item.company}
-                    {isExpired && <Badge bg="secondary" className="ms-2">Expired</Badge>}
-                  </Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">Date: {item.date}</Card.Subtitle>
-                  <Card.Title className="mb-2 text-muted">
-                    <h5>{item.job_title}</h5>
-                  </Card.Title>
-                  <Card.Text>{item.details}</Card.Text>
-                  {expandedCardId === item.id && (
-                    <div className="mt-3">
-                      <p><strong>More Info:</strong> {item.extra_info}</p>
-                    </div>
-                  )}
-                  {!isExpired && (
-                    <Button variant="info" size="sm" onClick={() => navigate(`/interview/${item.id}`)}>
-                      View Details
-                    </Button>
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
-          );
-        })}
+      {/* Displaying the interview data as cards */}
+      <Row>
+        {interviewData.map((item) => (
+          <Col key={item.id} md={4} sm={6} className="mb-4">
+            <Card className="interview-card mb-3">
+              <Card.Img
+                variant="top"
+                src={`http://127.0.0.1:8000/static/${item.logo_filename}`} 
+                alt={`${item.company} Logo`}
+                style={{ height: "120px", objectFit: "contain", padding: "1rem" }}
+              />
+              <Card.Body>
+                <Card.Title>{item.company}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">Date: {item.date}</Card.Subtitle>
+                <Card.Title className="mb-2 text-muted">
+                  <h5>{item.jobTitle}</h5>
+                </Card.Title>
+                <Card.Text>{item.details}</Card.Text>
+                {/* Button to view details of the specific interview */}
+                <Button
+                  variant="info"
+                  size="sm"
+                  onClick={() => navigate(`/interview/${item.id}`)}
+                >
+                  View Details
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </Container>
   );
