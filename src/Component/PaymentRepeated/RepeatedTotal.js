@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Row, Col, Table, CloseButton } from "react-bootstrap";
+import { Container, Form, Button, Table, CloseButton } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import axios from "axios"; // Ensure axios is installed
+import axios from "axios";
 
 const RepeatedTotal = () => {
   const [payments, setPayments] = useState([
     { id: "", amount: "", date: "", method: "" }
   ]);
 
-  // Fetch data from the backend when the component mounts
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/paymenttotal"); // Replace with actual endpoint if needed
-        setPayments(response.data); // Set the fetched payments data to state
+        const response = await axios.get("http://127.0.0.1:8000/paymenttotal"); 
+        setPayments(response.data);
       } catch (error) {
         console.error("Error fetching payment data:", error);
       }
@@ -30,10 +29,8 @@ const RepeatedTotal = () => {
     const paymentToDelete = payments[index];
     
     try {
-      // Send a DELETE request to the backend
       await axios.delete(`http://127.0.0.1:8000/paymenttotal/${paymentToDelete.id}`);
       
-      // Remove the payment from the state after successful deletion
       const newPayments = [...payments];
       newPayments.splice(index, 1);
       setPayments(newPayments);
@@ -54,12 +51,12 @@ const RepeatedTotal = () => {
     e.preventDefault();
 
     const payment = {
-      amount: total,  // Or sum the amounts if you're sending multiple
-      date: payments[0].date,  // Pick the first payment's date (you may need to handle this more dynamically)
-      method: payments[0].method  // Same as above
+      amount: total, 
+      date: payments[0].date, 
+      method: payments[0].method  
     };
 
-    console.log("Payment Data: ", payment); // Log payment data to check the structure
+    console.log("Payment Data: ", payment);
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/paymenttotal", payment);

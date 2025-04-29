@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Container, Card, CloseButton } from "react-bootstrap";
+import { Form, Button, Container, Card, CloseButton, Spinner, Alert } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
@@ -8,6 +8,9 @@ const RefundUpdate = () => {
     const [payAmount, setPayAmount] = useState("");
     const [refundAmount, setRefundAmount] = useState("");
     const [validated, setValidated] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -16,15 +19,18 @@ const RefundUpdate = () => {
     }, []);
 
     const fetchRefund = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`http://127.0.0.1:8000/refund/${id}`);
             const refund = response.data;
-            setStudentName(refund.student_name);
-            setPayAmount(refund.pay_amount);
-            setRefundAmount(refund.refund_amount);
+            setStudentName(refund.student_name || "");
+            setPayAmount(refund.pay_amount || "");
+            setRefundAmount(refund.refund_amount || "");
         } catch (error) {
+            setError("Failed to fetch refund data.");
             console.error("Error fetching refund:", error);
-            alert("Failed to fetch refund data.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -32,6 +38,7 @@ const RefundUpdate = () => {
         e.preventDefault();
         const form = e.currentTarget;
 
+        // Check validity of form and ensure refundAmount is not greater than payAmount
         if (form.checkValidity() === false || Number(refundAmount) > Number(payAmount)) {
             e.stopPropagation();
             setValidated(true);
@@ -44,13 +51,21 @@ const RefundUpdate = () => {
             refund_amount: refundAmount,
         };
 
+        setLoading(true);
+        setError(""); // Reset error
+        setSuccessMessage(""); // Reset success message
+
         try {
             await axios.put(`http://127.0.0.1:8000/refund/${id}`, updatedRefund);
-            alert("Refund updated successfully!");
-            navigate("/refundlist");
+            setSuccessMessage("Refund updated successfully!");
+            setTimeout(() => {
+                navigate("/refundlist"); // Redirect to refund list after 2 seconds
+            }, 2000);
         } catch (error) {
+            setError("Failed to update refund.");
             console.error("Error updating refund:", error);
-            alert("Failed to update refund.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -64,6 +79,17 @@ const RefundUpdate = () => {
                     </Link>
                 </Card.Header>
                 <Form noValidate validated={validated} onSubmit={handleUpdate}>
+                    {error && (
+                        <Alert variant="danger">
+                            {error}
+                        </Alert>
+                    )}
+                    {successMessage && (
+                        <Alert variant="success">
+                            {successMessage}
+                        </Alert>
+                    )}
+
                     <Form.Group className="mb-3">
                         <Form.Label>Student Name</Form.Label>
                         <Form.Control
@@ -74,7 +100,7 @@ const RefundUpdate = () => {
                             required
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please enter a name.
+                            Please enter a student name.
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -89,7 +115,7 @@ const RefundUpdate = () => {
                             required
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please enter a pay amount
+                            Please enter the paid amount.
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -101,18 +127,18 @@ const RefundUpdate = () => {
                             value={refundAmount}
                             onChange={(e) => setRefundAmount(e.target.value)}
                             min="0"
-                            isInvalid={
-                                refundAmount && Number(refundAmount) > Number(payAmount)
-                            }
+                            isInvalid={refundAmount && Number(refundAmount) > Number(payAmount)}
                             required
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please enter a refund amount
+                            Please enter a refund amount less than or equal to the paid amount.
                         </Form.Control.Feedback>
                     </Form.Group>
 
                     <div className="d-grid">
-                        <Button type="submit" variant="success">Update</Button>
+                        <Button type="submit" variant="success" disabled={loading}>
+                            {loading ? <Spinner as="span" animation="border" size="sm" /> : "Update"}
+                        </Button>
                     </div>
                 </Form>
             </Card>

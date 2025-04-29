@@ -26,9 +26,11 @@ import RefundUpdate from './Component/Refund/RefundUpdate';
 import PaymentRepeated from './Component/PaymentRepeated/PaymentRepeated';
 import RepeatedForm from './Component/PaymentRepeated/RepeatedForm';
 import RepeatedTotal from './Component/PaymentRepeated/RepeatedTotal';
+import PaymentRepeatedUpdate from './Component/PaymentRepeated/PaymentRepeatedUpdate';
 import InterviewCards from './Component/Interview/InterviewCards';
 import InterviewDetails from './Component/Interview/InterviewDetails';
 import AddInterview from './Component/Interview/AddInterview';
+
 function App() {
   return (
     <Provider store={Store}>
@@ -55,10 +57,11 @@ function App() {
             <Route path='/trainerpaymentupdate/:id' element={<TrainerPaymentUpdate/>}/>
             <Route path='/refundlist' element={<RefundList/>}/>
             <Route path='/refundform' element={<RefundForm/>}/>
-            <Route path='/refundupdate/:id' element={<RefundUpdate/>}/>
+            <Route path="/refundupdate/:id" element={<RefundUpdate />} />
             <Route path='/paymentrepeated' element={<PaymentRepeated/>}/>
             <Route path='/repeatedform' element={<RepeatedForm/>}/>
             <Route path='/repeatedtotal' element={<RepeatedTotal/>}/>
+            <Route path="/paymentrepeatedupdate/:id" element={<PaymentRepeatedUpdate />} />
             <Route path='/interviewcards' element={<InterviewCards/>}/>
             <Route path='/interview/:id' element={<InterviewDetails/>}/>
             <Route path='/add-interview' element={<AddInterview/>}/>

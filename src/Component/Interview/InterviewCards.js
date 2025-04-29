@@ -2,41 +2,49 @@ import React, { useState, useEffect } from "react";
 import { Card, Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import './InterviewCard.css'; // Importing the custom CSS
+import './InterviewCard.css'; 
 
 const InterviewCards = () => {
-  const [interviewData, setInterviewData] = useState([]); // State to hold interview data
-  const [loading, setLoading] = useState(true); // State to show loading text
-  const [error, setError] = useState(null); // State to hold any errors
-  const navigate = useNavigate(); // For navigation to detailed interview view
+  const [interviewData, setInterviewData] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        // Fetch interview data from the backend (API)
         const response = await axios.get("http://127.0.0.1:8000/interviews/");
-        setInterviewData(response.data); // Update state with the fetched data
-        setLoading(false); // Set loading to false once data is fetched
+        setInterviewData(response.data); 
+        setLoading(false); 
       } catch (err) {
-        setError("Error fetching data"); // Handle errors
-        setLoading(false); // Set loading to false if error occurs
+        setError("Error fetching data");
+        setLoading(false);
       }
     };
 
-    fetchInterviews(); // Fetch interviews when component mounts
+    fetchInterviews(); 
   }, []);
 
-  // If data is still loading, display loading message
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/interviews/${id}`);
+      setInterviewData(prevData => prevData.filter(item => item.id !== id)); 
+    } catch (error) {
+      console.error("Error deleting interview:", error);
+      alert("Failed to delete interview. Try again.");
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // If there is an error fetching data, display error message
   if (error) {
     return <div>{error}</div>;
   }
 
-  return (
+
+ return (
     <Container className="mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3 bg-secondary p-3">
         <h3 style={{ color: "white" }}>Upcoming Interviews</h3>
@@ -63,14 +71,31 @@ const InterviewCards = () => {
                   <h5>{item.jobTitle}</h5>
                 </Card.Title>
                 <Card.Text>{item.details}</Card.Text>
-                {/* Button to view details of the specific interview */}
-                <Button
-                  variant="info"
-                  size="sm"
-                  onClick={() => navigate(`/interview/${item.id}`)}
-                >
-                  View Details
-                </Button>
+
+                {/* Buttons */}
+                <div className="d-flex justify-content-between">
+                  <Button
+                    variant="info"
+                    size="sm"
+                    onClick={() => navigate(`/interview/${item.id}`)}
+                  >
+                    View Details
+                  </Button>
+
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this interview?")) {
+                        handleDelete(item.id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+
+                </div>
+
               </Card.Body>
             </Card>
           </Col>

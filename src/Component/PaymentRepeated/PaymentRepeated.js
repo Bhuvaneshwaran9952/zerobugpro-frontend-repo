@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Container, Table, Spinner, Button, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const PaymentRepeated = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Modal state
-  const [deletePaymentId, setDeletePaymentId] = useState(null); // Store the ID of the payment to delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false); 
+  const [deletePaymentId, setDeletePaymentId] = useState(null); 
+  const navigate = useNavigate(); // For navigation on Edit
 
-  // Fetch data on mount
   useEffect(() => {
     fetchPayments();
   }, []);
 
-  // GET request to backend API
   const fetchPayments = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/repeatedpayments");
@@ -26,39 +25,34 @@ const PaymentRepeated = () => {
     }
   };
 
-  // Show delete confirmation modal
   const handleShowDeleteModal = (id) => {
-    setDeletePaymentId(id); // Set the ID to be deleted
-    setShowDeleteModal(true); // Show the modal
+    setDeletePaymentId(id);
+    setShowDeleteModal(true);
   };
 
-  // Handle the deletion
   const handleDelete = async () => {
     try {
       await axios.delete(`http://127.0.0.1:8000/repeatedpayments/${deletePaymentId}`);
-      setPayments(payments.filter(payment => payment.id !== deletePaymentId)); // Remove the deleted payment from the state
-      setShowDeleteModal(false); // Close the modal after deleting
+      setPayments(payments.filter(payment => payment.id !== deletePaymentId));
+      setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting payment:", error);
     }
   };
 
-  // Hide the delete modal (if canceled)
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
   };
 
-  // Edit payment handler (just a placeholder for now)
   const handleEdit = (id) => {
-    console.log("Edit payment with ID:", id);
-    // You can navigate to an edit form or show a modal for editing the payment details
+    navigate(`/paymentrepeatedupdate/${id}`);
   };
 
   return (
     <Container className="mt-4">
       {/* Header Section */}
       <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3 rounded">
-        <h2 className="mb-0">You Have a Good Future</h2>
+        <h2 className="mb-0">You have a promising future</h2>
         <div className="d-flex gap-2">
           <Link to="/repeatedform" className="btn btn-info btn-sm">Pay [$]</Link>
           <Link to="/repeatedtotal" className="btn btn-light btn-sm">Total [$]</Link>
@@ -78,7 +72,7 @@ const PaymentRepeated = () => {
               <th>Name</th>
               <th>Contact</th>
               <th>Payment Method</th>
-              <th>Actions</th> {/* Add Actions column */}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -89,19 +83,18 @@ const PaymentRepeated = () => {
                   <td>{item.name}</td>
                   <td>{item.contact}</td>
                   <td>{item.payment_method}</td>
-                  <td className="text-center">
-                    {/* <Button 
-                      variant="warning" 
+                  <td className="text-center d-flex justify-content-center gap-2">
+                    <Button 
+                      variant="primary" 
                       size="sm" 
-                      onClick={() => handleEdit(item.id)} 
-                      className="me-2"
+                      onClick={() => handleEdit(item.id)}
                     >
                       Edit
-                    </Button> */}
+                    </Button>
                     <Button 
                       variant="danger" 
                       size="sm" 
-                      onClick={() => handleShowDeleteModal(item.id)} // Show modal on delete
+                      onClick={() => handleShowDeleteModal(item.id)}
                     >
                       Delete
                     </Button>

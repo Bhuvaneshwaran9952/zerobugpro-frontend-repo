@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Form, Button, Row, Col, Card,CloseButton } from "react-bootstrap";
+import { Container, Form, Button, Row, Col, Card, CloseButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -15,6 +15,8 @@ const InterviewForm = () => {
     details: "",
     information: "",
   });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -25,9 +27,33 @@ const InterviewForm = () => {
     }
   };
 
+  const validate = () => {
+    const newErrors = {};
+    const regexPhone = /^[0-9]{10}$/; // Phone number should be 10 digits
+
+    if (!formData.logo) newErrors.logo = "Logo is required.";
+    if (!formData.company) newErrors.company = "Company name is required.";
+    if (!formData.jobTitle) newErrors.jobTitle = "Job title is required.";
+    if (!formData.date) newErrors.date = "Date is required.";
+    if (!formData.contact || !regexPhone.test(formData.contact))
+      newErrors.contact = "Contact must be 10 digits.";
+    if (!formData.location) newErrors.location = "Location is required.";
+    if (!formData.details) newErrors.details = "Details are required.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // If no errors, return true
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    setIsSubmitting(true);
+
+    const isValid = validate();
+    if (!isValid) {
+      setIsSubmitting(false); // Stop submitting if validation fails
+      return;
+    }
+
     const data = new FormData();
     data.append("logo", formData.logo);
     data.append("company", formData.company);
@@ -37,13 +63,13 @@ const InterviewForm = () => {
     data.append("location", formData.location);
     data.append("details", formData.details);
     data.append("information", formData.information);
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/interviews/", {
         method: "POST",
         body: data,
       });
-  
+
       if (response.ok) {
         console.log("Interview submitted successfully");
         navigate("/interviewcards");
@@ -54,16 +80,15 @@ const InterviewForm = () => {
       console.error("Error submitting form:", error);
     }
   };
-  
 
   return (
     <Container className="mt-4">
       <Card className="p-4 shadow-lg rounded-2xl">
         <Card.Header className="d-flex justify-content-between align-items-center bg-secondary text-white mb-3">
-            <h2 className="mb-0">Add Interview</h2>
-            <Link to={'/interviewcards'}>
-                <CloseButton variant="white" />
-            </Link>
+          <h2 className="mb-0">Add Interview</h2>
+          <Link to={'/interviewcards'}>
+            <CloseButton variant="white" />
+          </Link>
         </Card.Header>
         <Form onSubmit={handleSubmit}>
           <Row>
@@ -75,8 +100,9 @@ const InterviewForm = () => {
                   name="logo"
                   accept="image/*"
                   onChange={handleChange}
-                  required
+                  isInvalid={!!errors.logo}
                 />
+                <Form.Control.Feedback type="invalid">{errors.logo}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6} className="mb-3">
@@ -87,8 +113,9 @@ const InterviewForm = () => {
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
-                  required
+                  isInvalid={!!errors.company}
                 />
+                <Form.Control.Feedback type="invalid">{errors.company}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -102,8 +129,9 @@ const InterviewForm = () => {
                   name="jobTitle"
                   value={formData.jobTitle}
                   onChange={handleChange}
-                  required
+                  isInvalid={!!errors.jobTitle}
                 />
+                <Form.Control.Feedback type="invalid">{errors.jobTitle}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6} className="mb-3">
@@ -114,8 +142,9 @@ const InterviewForm = () => {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
-                  required
+                  isInvalid={!!errors.date}
                 />
+                <Form.Control.Feedback type="invalid">{errors.date}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -129,8 +158,9 @@ const InterviewForm = () => {
                   name="contact"
                   value={formData.contact}
                   onChange={handleChange}
-                  required
+                  isInvalid={!!errors.contact}
                 />
+                <Form.Control.Feedback type="invalid">{errors.contact}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6} className="mb-3">
@@ -141,8 +171,9 @@ const InterviewForm = () => {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  required
-                />
+                  isInvalid={!!errors.location}
+                 />
+                <Form.Control.Feedback type="invalid">{errors.location}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -155,8 +186,9 @@ const InterviewForm = () => {
               name="details"
               value={formData.details}
               onChange={handleChange}
-              required
+              isInvalid={!!errors.details}
             />
+            <Form.Control.Feedback type="invalid">{errors.details}</Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group controlId="formInformation" className="mb-3">
@@ -171,7 +203,7 @@ const InterviewForm = () => {
           </Form.Group>
 
           <div className="text-center">
-            <Button variant="primary" type="submit" className="px-4">
+            <Button variant="primary" type="submit" className="px-4" disabled={isSubmitting}>
               Submit
             </Button>
           </div>

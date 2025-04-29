@@ -20,12 +20,14 @@ const Footer = () => {
           {/* Column 2: Quick Links */}
           <Col md={4} className="mb-3">
             <h5>Quick Links</h5>
-            <ul className="list-unstyled">
-              <li><a href="/" className="text-light">Home</a></li>
-              <li><a href="/user" className="text-light">User</a></li>
-              <li><a href="/trainer" className="text-light">Trainer</a></li>
-              <li><a href="/services" className="text-light">Services</a></li>
-              <li><a href="/contact" className="text-light">Contact</a></li>
+            <ul className="list-unstyled" >
+              <li><a href="/" className="text-light" style={{textDecoration: "none"}}>Home</a></li>
+              <li><a href="/studentlist" className="text-light" style={{textDecoration: "none"}}>Student List</a></li>
+              <li><a href="/paymentdetails" className="text-light" style={{textDecoration: "none"}}>Student Payment</a></li>
+              <li><a href="/trainerpayment" className="text-light" style={{textDecoration: "none"}}>Trainer Payment</a></li>
+              <li><a href="/refundlist" className="text-light" style={{textDecoration: "none"}}>Refund List</a></li>
+              <li><a href="/paymentrepeated" className="text-light" style={{textDecoration: "none"}}>Pay</a></li>
+              <li><a href="/interviewcards" className="text-light" style={{textDecoration: "none"}}>Interview Detials</a></li>
             </ul>
           </Col>
 
