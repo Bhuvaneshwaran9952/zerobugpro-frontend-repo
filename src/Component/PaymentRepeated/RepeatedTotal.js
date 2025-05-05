@@ -50,29 +50,30 @@ const RepeatedTotal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payment = {
-      amount: total, 
-      date: payments[0].date, 
-      method: payments[0].method  
-    };
-
-    console.log("Payment Data: ", payment);
+    // Prepare the data for updating payments
+    const updatedPayments = payments.map(payment => ({
+      id: payment.id,  
+      amount: payment.amount, 
+      date: payment.date, 
+      method: payment.method
+    }));
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/paymenttotal", payment);
-      console.log("Submitted:", response.data);
+      for (const payment of updatedPayments) {
+        if (payment.id) {
+          const response = await axios.put(`http://127.0.0.1:8000/paymenttotal/${payment.id}`, payment);
+          console.log("Updated Payment:", response.data);
+        }
+      }
     } catch (error) {
-      console.error("Error submitting payments:", error);
+      console.error("Error updating payments:", error);
     }
   };
 
   return (
     <Container className="mt-5">
       <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
-        {/* Left: Heading */}
         <h3 className="mb-0">Total Payment</h3>
-
-        {/* Right: Buttons and Total */}
         <div className="d-flex align-items-center gap-3">
           <Button variant="success" onClick={addPayment}>
             Add Payment [+]

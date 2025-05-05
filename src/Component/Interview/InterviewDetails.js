@@ -58,7 +58,7 @@ const InterviewDetails = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-4">
       <div className="card mx-auto p-4 shadow-sm" style={{ maxWidth: "1000px", borderRadius: "1rem" }}>
         <div className="text-center">
           <img
@@ -75,7 +75,7 @@ const InterviewDetails = () => {
           <p><strong>Contact:</strong> {interview.contact}</p>
           <p><strong>Location:</strong> {interview.location}</p>
           <p><strong>Details:</strong> {interview.details}</p>
-          <p><strong>Information:</strong> {interview.information}</p>
+          <p><strong>About the job:</strong> {interview.information}</p>
         </div>
 
         <div className="text-center mt-4">

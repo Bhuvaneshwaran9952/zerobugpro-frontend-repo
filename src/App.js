@@ -1,18 +1,17 @@
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from "../src/Component/Home/Home";
-import Studentlist from './Component/Studentlist/Studentlist';
+import Studentlist from './Component/AddStudent/Studentlist';
 import AddStudent from './Component/AddStudent/AddStudent';
-import UpdateStudent from './Component/UpdateStudent/UpdateStudent';
+import UpdateStudent from './Component/AddStudent/UpdateStudent';
 import { ToastContainer } from 'react-toastify';
 import { Provider } from 'react-redux';
 import Store from '../src/Redux/Store';
 import Navbar from './Component/Navbar/navbar';
 import Trainer from './Component/Trainer/Trainer';
-import TrainerUserList from './Component/TrainerUserList/TrainerUserList';
-import TrainerUpdate from './Component/TrainerUpdate/TrainerUpdate';
-import TrainerAssign from './Component/TrainerAssign/TrainerAssign';
+import TrainerUserList from './Component/Trainer/TrainerUserList';
+import TrainerUpdate from './Component/Trainer/TrainerUpdate';
+import TrainerAssign from './Component/Trainer/TrainerAssign';
 import ViewPage from './Component/ViewPage/ViewPage';
 import PaymentDetails from './Component/StudentPayment/PaymentDetails';
 import PaymentForm from './Component/StudentPayment/PaymentForm';
@@ -48,7 +47,7 @@ function App() {
             <Route path='/trainerassign' element={<TrainerAssign />} />
             <Route path="/trainerassign/:trainerId" element={<TrainerAssign />} />
             <Route path="/viewpage" element={<ViewPage />} />
-            <Route path="/viewpage/:trainerId" element={<ViewPage />} />
+            <Route path="/viewpage/:id" element={<ViewPage />} />
             <Route path="/paymentdetails" element={<PaymentDetails />} />
             <Route path="/paymentform" element={<PaymentForm />} />
             <Route path="/paymentupdate/:id" element={<PaymentUpdate />} />

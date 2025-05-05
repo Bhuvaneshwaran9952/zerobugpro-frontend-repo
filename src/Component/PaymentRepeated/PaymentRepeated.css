@@ -1,0 +1,6 @@
+/* Specific table with no hover effect */
+.no-hover-table tr:hover {
+    background-color: transparent !important; /* Remove hover background color */
+    cursor: default !important; /* Remove hover cursor */
+  }
+  

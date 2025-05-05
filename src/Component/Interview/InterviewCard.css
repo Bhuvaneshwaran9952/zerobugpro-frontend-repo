@@ -8,3 +8,40 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     background-color: #f8f9fa;
 }
+
+.interview-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .interview-card .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .interview-card .card-title,
+  .interview-card .card-subtitle,
+  .interview-card .card-text {
+    margin-bottom: 0.5rem;
+  }
+  
+  .interview-card .btn {
+    margin-top: auto;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+.expired-card{
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  box-shadow: none;
+  opacity: 0.8;
+}
+  
