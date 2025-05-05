@@ -11,9 +11,12 @@ const InterviewForm = () => {
     jobTitle: "",
     date: "",
     contact: "",
+    email: "",
     location: "",
     details: "",
     information: "",
+    skills: "",
+    duration: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,8 +32,11 @@ const InterviewForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    const regexPhone = /^[0-9]{10}$/; // Phone number should be 10 digits
+    const regexPhone = /^[0-9]{10}$/; 
 
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Valid email is required.";
+    }  
     if (!formData.logo) newErrors.logo = "Logo is required.";
     if (!formData.company) newErrors.company = "Company name is required.";
     if (!formData.jobTitle) newErrors.jobTitle = "Job title is required.";
@@ -41,35 +47,47 @@ const InterviewForm = () => {
     if (!formData.details) newErrors.details = "Details are required.";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // If no errors, return true
+    return Object.keys(newErrors).length === 0; 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     const isValid = validate();
     if (!isValid) {
-      setIsSubmitting(false); // Stop submitting if validation fails
+      setIsSubmitting(false);
       return;
     }
-
+  
     const data = new FormData();
     data.append("logo", formData.logo);
     data.append("company", formData.company);
     data.append("jobTitle", formData.jobTitle);
     data.append("date", formData.date);
     data.append("contact", formData.contact);
+    data.append("email", formData.email)
     data.append("location", formData.location);
+    data.append("skills", formData.skills);
+    data.append("duration", formData.duration);
     data.append("details", formData.details);
     data.append("information", formData.information);
 
+    const skillsArray = formData.skills
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter((skill) => skill.length > 0);
+  
+    skillsArray.forEach((skill) => {
+      data.append("skills", skill); 
+    });
+  
     try {
       const response = await fetch("http://127.0.0.1:8000/interviews/", {
         method: "POST",
         body: data,
       });
-
+  
       if (response.ok) {
         console.log("Interview submitted successfully");
         navigate("/interviewcards");
@@ -80,6 +98,7 @@ const InterviewForm = () => {
       console.error("Error submitting form:", error);
     }
   };
+  
 
   return (
     <Container className="mt-4">
@@ -148,9 +167,6 @@ const InterviewForm = () => {
               </Form.Group>
             </Col>
           </Row>
-
-
-
           <Row>
             <Col md={6} className="mb-3">
               <Form.Group controlId="formContact">
@@ -166,7 +182,21 @@ const InterviewForm = () => {
               </Form.Group>
             </Col>
             <Col md={6} className="mb-3">
-              <Form.Group controlId="formLocation">
+            <Form.Group controlId="formEmail" className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+            </Form.Group>
+            </Col>
+          </Row>
+
+          <Form.Group controlId="formLocation">
                 <Form.Label>Location</Form.Label>
                 <Form.Control
                   type="text"
@@ -177,8 +207,29 @@ const InterviewForm = () => {
                  />
                 <Form.Control.Feedback type="invalid">{errors.location}</Form.Control.Feedback>
               </Form.Group>
-            </Col>
-          </Row>
+
+          <Form.Group controlId="formSkills" className="mb-3">
+            <Form.Label>Skills</Form.Label>
+            <Form.Control
+              type="text"
+              name="skills"
+              value={formData.skills}
+              onChange={handleChange}
+              isInvalid={!!errors.skills}
+            />
+            <Form.Control.Feedback type="invalid">{errors.skills}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group controlId="formDuration" className="mb-3">
+            <Form.Label>Duration</Form.Label>
+            <Form.Control
+              type="text"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
 
           <Form.Group controlId="formDetails" className="mb-3">
             <Form.Label>Details</Form.Label>

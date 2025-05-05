@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import './InterviewCard.css'; // Custom styles for layout & card sizing
+import './InterviewCard.css'; 
 
 const InterviewCards = () => {
   const [interviewData, setInterviewData] = useState([]); 
@@ -10,8 +10,7 @@ const InterviewCards = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate(); 
 
-  // Fetch interview data from backend
-  useEffect(() => {
+    useEffect(() => {
     const fetchInterviews = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/interviews/");

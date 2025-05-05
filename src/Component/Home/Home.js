@@ -24,7 +24,7 @@ const Home = () =>{
                 </Row>
                 </Container>
                 <HoverExtraCards/>
-                <Footer/>         
+                <Footer/>       
         </div>
     )
 }
