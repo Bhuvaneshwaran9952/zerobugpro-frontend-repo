@@ -86,6 +86,7 @@ const InterviewCards = () => {
                     View Details
                   </Button>
                   )}
+                  <Button variant="warning" size="sm" onClick={()=>navigate(`interviewupdate/${item.id}`)}>Edit</Button>
                   <Button
                     variant="danger"
                     size="sm"

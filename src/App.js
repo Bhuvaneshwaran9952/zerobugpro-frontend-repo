@@ -29,6 +29,7 @@ import PaymentRepeatedUpdate from './Component/PaymentRepeated/PaymentRepeatedUp
 import InterviewCards from './Component/Interview/InterviewCards';
 import InterviewDetails from './Component/Interview/InterviewDetails';
 import AddInterview from './Component/Interview/AddInterview';
+import InterviewUpdate from './Component/Interview/InterviewUpdate';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
             <Route path='/interviewcards' element={<InterviewCards/>}/>
             <Route path='/interview/:id' element={<InterviewDetails/>}/>
             <Route path='/add-interview' element={<AddInterview/>}/>
+            <Route path="/interviewcards/interviewupdate/:id" element={<InterviewUpdate />} />
           </Routes>
         </BrowserRouter>
         <ToastContainer className="toast-position"
