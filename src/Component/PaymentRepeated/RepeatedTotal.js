@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Container, Form, Button, Table, CloseButton } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const RepeatedTotal = () => {
   const [payments, setPayments] = useState([
@@ -11,10 +13,11 @@ const RepeatedTotal = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/paymenttotal"); 
+        const response = await axios.get("http://127.0.0.1:8000/paymenttotal");
         setPayments(response.data);
       } catch (error) {
         console.error("Error fetching payment data:", error);
+        toast.error("Failed to load payments.");
       }
     };
 
@@ -22,20 +25,29 @@ const RepeatedTotal = () => {
   }, []);
 
   const addPayment = () => {
-    setPayments([...payments, { amount: "", date: "", method: "" }]);
+    setPayments([...payments, { id: "", amount: "", date: "", method: "" }]);
   };
 
   const removePayment = async (index) => {
+    const Confirmed = window.confirm("Are you sure you want to delete this payment?")
+    if (!Confirmed) return;
+
     const paymentToDelete = payments[index];
-    
+
+    if (!paymentToDelete.id) {
+      // Unsaved row; just remove from UI
+      const newPayments = payments.filter((_, i) => i !== index);
+      setPayments(newPayments);
+      return;
+    }
+
     try {
       await axios.delete(`http://127.0.0.1:8000/paymenttotal/${paymentToDelete.id}`);
-      
-      const newPayments = [...payments];
-      newPayments.splice(index, 1);
-      setPayments(newPayments);
+      setPayments(payments.filter((_, i) => i !== index));
+      toast.success("Payment deleted successfully.");
     } catch (error) {
       console.error("Error deleting payment:", error);
+      toast.error("Failed to delete payment.");
     }
   };
 
@@ -50,28 +62,33 @@ const RepeatedTotal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the data for updating payments
-    const updatedPayments = payments.map(payment => ({
-      id: payment.id,  
-      amount: payment.amount, 
-      date: payment.date, 
-      method: payment.method
-    }));
+    const validPayments = payments.every(
+      (p) => p.amount && p.date && p.method
+    );
+
+    if (!validPayments) {
+      toast.warning("Please fill all required fields before submitting.");
+      return;
+    }
 
     try {
-      for (const payment of updatedPayments) {
+      for (const payment of payments) {
         if (payment.id) {
-          const response = await axios.put(`http://127.0.0.1:8000/paymenttotal/${payment.id}`, payment);
-          console.log("Updated Payment:", response.data);
+          await axios.put(`http://127.0.0.1:8000/paymenttotal/${payment.id}`, payment);
+        } else {
+          await axios.post("http://127.0.0.1:8000/paymenttotal/", payment);
         }
       }
+      toast.success("Payments submitted successfully.");
     } catch (error) {
-      console.error("Error updating payments:", error);
+      console.error("Error saving payments:", error);
+      toast.error("Failed to submit payments.");
     }
   };
 
   return (
     <Container className="mt-5">
+      <ToastContainer position="top-center" />
       <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
         <h3 className="mb-0">Total Payment</h3>
         <div className="d-flex align-items-center gap-3">
@@ -120,6 +137,7 @@ const RepeatedTotal = () => {
                   <Form.Select
                     value={payment.method}
                     onChange={(e) => handleChange(index, "method", e.target.value)}
+                    required
                   >
                     <option value="">Payment Method</option>
                     <option value="cash">Cash</option>

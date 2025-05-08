@@ -9,7 +9,6 @@ const NavbarComponent = () => {
 
   return (
     <>
-    
     <Navbar bg="white" variant="white" expand="lg" className="mb-3">
     <Sidebar/>
       <Container>

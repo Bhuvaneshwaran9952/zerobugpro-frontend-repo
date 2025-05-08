@@ -95,7 +95,7 @@ const Userlist = (props) => {
                                             </Card.Text>
                                             <Row>
                                                 <Col>
-                                                    <Link to={'/user/edit/' + item.id} className="btn btn-primary w-100 mb-2">Edit</Link>
+                                                    <Link to={'/studentlist/edit/' + item.id} className="btn btn-primary w-100 mb-2">Edit</Link>
                                                 </Col>
                                                 <Col>
                                                     <Button variant="danger" size="sm" className="w-100" onClick={() => handleDelete(item.id)}>Delete</Button>
