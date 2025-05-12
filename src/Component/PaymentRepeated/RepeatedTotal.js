@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Table, CloseButton } from "react-bootstrap";
+import { Container, Form, Button, Table, CloseButton, Pagination } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,6 +9,8 @@ const RepeatedTotal = () => {
   const [payments, setPayments] = useState([
     { id: "", amount: "", date: "", method: "" }
   ]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paymentsPerPage] = useState(10); 
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -29,7 +31,7 @@ const RepeatedTotal = () => {
   };
 
   const removePayment = async (index) => {
-    const Confirmed = window.confirm("Are you sure you want to delete this payment?")
+    const Confirmed = window.confirm("Are you sure you want to delete this payment?");
     if (!Confirmed) return;
 
     const paymentToDelete = payments[index];
@@ -86,6 +88,13 @@ const RepeatedTotal = () => {
     }
   };
 
+  // Pagination logic
+  const indexOfLastPayment = currentPage * paymentsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - paymentsPerPage;
+  const currentPayments = payments.slice(indexOfFirstPayment, indexOfLastPayment);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Container className="mt-5">
       <ToastContainer position="top-center" />
@@ -114,7 +123,7 @@ const RepeatedTotal = () => {
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment, index) => (
+            {currentPayments.map((payment, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>
@@ -165,6 +174,27 @@ const RepeatedTotal = () => {
           Submit Payments
         </Button>
       </Form>
+
+      {/* Pagination Component */}
+      <Pagination className="d-flex justify-content-center mt-3">
+        <Pagination.Prev
+          onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+          disabled={currentPage === 1}
+        />
+        {Array.from({ length: Math.ceil(payments.length / paymentsPerPage) }).map((_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next
+          onClick={() => setCurrentPage(currentPage < Math.ceil(payments.length / paymentsPerPage) ? currentPage + 1 : currentPage)}
+          disabled={currentPage === Math.ceil(payments.length / paymentsPerPage)}
+        />
+      </Pagination>
     </Container>
   );
 };

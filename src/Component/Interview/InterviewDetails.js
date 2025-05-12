@@ -71,14 +71,15 @@ const InterviewDetails = () => {
         </div>
 
         <div className="mt-4">
-          <p><strong>Date:</strong> {interview.date}</p>
-          <p><strong>Contact:</strong> {interview.contact}</p>
-          <p><strong>Email:</strong> {interview.email}</p>
-          <p><strong>Skills:</strong> {interview.skills}</p>
-          <p><strong>Duration:</strong> {interview.duration}</p>
-          <p><strong>Location:</strong> {interview.location}</p>
-          <p><strong>Details:</strong> {interview.details}</p>
-          <p><strong>About the job:</strong> {interview.information}</p>
+          <p><strong className='text-muted'>Date:</strong> {interview.date}</p>
+          <p><strong className='text-muted'>Contact:</strong> {interview.contact}</p>
+          <p><strong className='text-muted'>Email:</strong> {interview.email}</p>
+          <p><strong className='text-muted'>Skills:</strong> {interview.skills}</p>
+          <p><strong className='text-muted'>Experience:</strong> {interview.experience}</p>
+          <p><strong className='text-muted'>Duration:</strong> {interview.duration}</p>
+          <p><strong className='text-muted'>Location:</strong> {interview.location}</p>
+          <p><strong className='text-muted'>Details:</strong> {interview.details}</p>
+          <p><strong className='text-muted'>About the job:</strong> {interview.information}</p>
         </div>
 
         <div className="text-center mt-4">

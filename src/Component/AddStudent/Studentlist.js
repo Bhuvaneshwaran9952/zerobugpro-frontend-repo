@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FetchUserList, RemoveUser } from "../../Redux/Action";
-import { Container, Table, Button, Card, Row, Col } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Pagination } from "react-bootstrap";
 
 const Userlist = (props) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     useEffect(() => {
         props.loaduser();
     }, []);
@@ -14,8 +17,54 @@ const Userlist = (props) => {
         if (window.confirm('Do you want to remove?')) {
             props.removeuser(code);
             props.loaduser();
+            setCurrentPage(1);
             toast.success('User removed successfully.');
         }
+    };
+
+    const userList = props.user.userlist || [];
+    const totalPages = Math.ceil(userList.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = userList.slice(indexOfFirstItem, indexOfLastItem);
+
+    const renderPagination = () => {
+        return (
+            totalPages > 1 && (
+                <Pagination className="justify-content-center mt-3">
+                    {/* First Page Button */}
+                    <Pagination.First 
+                        onClick={() => setCurrentPage(1)} 
+                        disabled={currentPage === 1} 
+                    />
+                    {/* Previous Page Button */}
+                    <Pagination.Prev 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                        disabled={currentPage === 1} 
+                    />
+                    {/* Page Number Buttons */}
+                    {[...Array(totalPages)].map((_, idx) => (
+                        <Pagination.Item
+                            key={idx + 1}
+                            active={idx + 1 === currentPage}
+                            onClick={() => setCurrentPage(idx + 1)}
+                        >
+                            {idx + 1}
+                        </Pagination.Item>
+                    ))}
+                    {/* Next Page Button */}
+                    <Pagination.Next 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                        disabled={currentPage === totalPages} 
+                    />
+                    {/* Last Page Button */}
+                    <Pagination.Last 
+                        onClick={() => setCurrentPage(totalPages)} 
+                        disabled={currentPage === totalPages} 
+                    />
+                </Pagination>
+            )
+        );
     };
 
     return (
@@ -52,9 +101,9 @@ const Userlist = (props) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.user.userlist && props.user.userlist.map((item, index) => (
+                                    {currentItems.map((item, index) => (
                                         <tr key={item.id}>
-                                            <td>{index + 1}</td>
+                                            <td>{indexOfFirstItem + index + 1}</td>
                                             <td>{item.name}</td>
                                             <td>{item.email}</td>
                                             <td>{item.phone}</td>
@@ -73,12 +122,13 @@ const Userlist = (props) => {
                                     ))}
                                 </tbody>
                             </Table>
+                            {renderPagination()}
                         </div>
 
                         {/* Cards for Mobile View */}
                         <div className="d-md-none">
-                            {props.user.userlist && props.user.userlist.length > 0 ? (
-                                props.user.userlist.map((item, index) => (
+                            {currentItems.length > 0 ? (
+                                currentItems.map((item, index) => (
                                     <Card key={item.id} className="mb-3 shadow-sm">
                                         <Card.Body>
                                             <Card.Title className="fw-bold">{item.name}</Card.Title>
@@ -109,6 +159,7 @@ const Userlist = (props) => {
                                     <h5>No users available</h5>
                                 </div>
                             )}
+                            {renderPagination()}
                         </div>
                     </div>
                 </div>

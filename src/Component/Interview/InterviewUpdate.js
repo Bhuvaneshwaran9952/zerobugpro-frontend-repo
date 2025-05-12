@@ -25,6 +25,7 @@ const InterviewUpdate = () => {
     information: "",
     skills: "",
     duration: "",
+    experience: "",
   });
   const [errors, setErrors] = useState({});
   const [existingLogo, setExistingLogo] = useState(null);
@@ -77,6 +78,7 @@ const InterviewUpdate = () => {
       newErrors.contact = "Contact must be 10 digits.";
     if (!formData.location) newErrors.location = "Location is required.";
     if (!formData.details) newErrors.details = "Details are required.";
+    if (!formData.experience) newErrors.experience = "Experience are required."
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,6 +105,7 @@ const InterviewUpdate = () => {
     data.append("email", formData.email);
     data.append("location", formData.location);
     data.append("duration", formData.duration);
+    data.append("experience", formData.experience);
     data.append("details", formData.details);
     data.append("information", formData.information);
 
@@ -284,6 +287,16 @@ const InterviewUpdate = () => {
               type="text"
               name="duration"
               value={formData.duration}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          
+          <Form.Group controlId="formExperience" className="mb-3">
+            <Form.Label>Experience</Form.Label>
+            <Form.Control
+              type="text"
+              name="experience"
+              value={formData.experience}
               onChange={handleChange}
             />
           </Form.Group>

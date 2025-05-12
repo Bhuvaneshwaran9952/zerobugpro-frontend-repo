@@ -1,46 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { Table, Container, Button, Card } from "react-bootstrap";
+import { Table, Container, Button, Card, Pagination } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 
-const TrainerPayment = () =>{
+const TrainerPayment = () => {
+  const [payments, setPayments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paymentsPerPage] = useState(5); // You can adjust this number based on how many items you want per page
+  const navigate = useNavigate();
 
-    const [payments, setPayments] = useState([]);
-    const navigate = useNavigate();
-  
-    useEffect(() => {
-      fetchPayments();
-    }, []);
-  
-    const fetchPayments = async () => {
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  const fetchPayments = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/trainerpayment");
+      setPayments(response.data);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this payment?")) {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/trainerpayment");
-        setPayments(response.data);
+        await axios.delete(`http://127.0.0.1:8000/trainerpayment/${id}/`);
+        setPayments(payments.filter((payment) => payment.id !== id));
+        alert("Payment deleted successfully!");
       } catch (error) {
-        console.error("Error fetching payments:", error);
+        console.error("Error deleting payment:", error);
+        alert("Failed to delete payment.");
       }
-    };
-  
-    const handleDelete = async (id) => {
-      if (window.confirm("Are you sure you want to delete this payment?")) {
-        try {
-          await axios.delete(`http://127.0.0.1:8000/trainerpayment/${id}/`);
-          setPayments(payments.filter(payment => payment.id !== id));
-          alert("Payment deleted successfully!");
-        } catch (error) {
-          console.error("Error deleting payment:", error);
-          alert("Failed to delete payment.");
-        }
-      }
-    };
+    }
+  };
 
-    return(
-  <Container className="mt-4">
-        <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
-          <h2 className="mb-0">Trainer Payment List</h2>
-          <Link to="/trainerpaymentform" className="btn btn-warning">Add [+]</Link>
-        </div>
+  // Pagination logic
+  const indexOfLastPayment = currentPage * paymentsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - paymentsPerPage;
+  const currentPayments = payments.slice(indexOfFirstPayment, indexOfLastPayment);
+
+  // Handle page change
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Total pages
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(payments.length / paymentsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <Container className="mt-4">
+      <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
+        <h2 className="mb-0">Trainer Payment List</h2>
+        <Link to="/trainerpaymentform" className="btn btn-warning">Add [+]</Link>
+      </div>
 
       {/* Table View for Larger Screens */}
       <div className="d-none d-md-block">
@@ -58,10 +73,10 @@ const TrainerPayment = () =>{
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment, index) => {
+            {currentPayments.map((payment, index) => {
               const dueDate = new Date(payment.due_date);
               const payDate = new Date(payment.pay_date); 
-              
+
               const today = new Date();
               today.setHours(0, 0, 0, 0);
               dueDate.setHours(0, 0, 0, 0);
@@ -71,7 +86,7 @@ const TrainerPayment = () =>{
 
               return (
                 <tr key={payment.id} className={isOverdue ? "bg-danger text-white" : isFullyPaid ? "bg-success text-white" : ""}>
-                  <td>{index + 1}</td>
+                  <td>{indexOfFirstPayment + index + 1}</td>
                   <td>
                     <span className={isOverdue ? "badge bg-danger me-2" : isFullyPaid ? "badge bg-success me-2" : "badge bg-warning me-2"}>
                       <GoDotFill />
@@ -96,10 +111,10 @@ const TrainerPayment = () =>{
 
       {/* Card View for Mobile Screens */}
       <div className="d-block d-md-none">
-        {payments.map((payment, index) => {
+        {currentPayments.map((payment, index) => {
           const dueDate = new Date(payment.due_date);
           const payDate = new Date(payment.pay_date); 
-          
+
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           dueDate.setHours(0, 0, 0, 0);
@@ -128,8 +143,21 @@ const TrainerPayment = () =>{
           );
         })}
       </div>
-    </Container>
 
-    )
-}
+      {/* Pagination */}
+      <div className="d-flex justify-content-center mt-4">
+        <Pagination>
+          <Pagination.Prev onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)} />
+          {pageNumbers.map((number) => (
+            <Pagination.Item key={number} active={number === currentPage} onClick={() => paginate(number)}>
+              {number}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next onClick={() => setCurrentPage(currentPage < pageNumbers.length ? currentPage + 1 : currentPage)} />
+        </Pagination>
+      </div>
+    </Container>
+  );
+};
+
 export default TrainerPayment;

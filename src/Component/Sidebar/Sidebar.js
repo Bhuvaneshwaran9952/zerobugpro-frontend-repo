@@ -13,6 +13,7 @@ import { MdOutlinePayment } from "react-icons/md";
 import { SiTrainerroad } from "react-icons/si";
 import { TbCreditCardRefund } from "react-icons/tb";
 import { FaCcAmazonPay } from "react-icons/fa";
+import { FaIntercom } from "react-icons/fa6";
 import { Link } from "react-router-dom"; 
 
 const Sidebar = () => {
@@ -48,6 +49,7 @@ const Sidebar = () => {
                         <p className="sidebar-section">Useful</p>
                         <Nav.Link to="/paymentrepeated" as={Link}  className="sidebar-item"><FaCcAmazonPay className="icon"/> Pay</Nav.Link>
                         <Nav.Link to="/interviewcards" as={Link}  className="sidebar-item"><FaInvision  className="icon"/> Interview Detials</Nav.Link>
+                        <Nav.Link to="/publicview" as={Link}  className="sidebar-item"><FaIntercom  className="icon"/>Public View</Nav.Link>
 
                         <p className="sidebar-section">Service</p>
                         <Nav.Link as={Link}  className="sidebar-item"><GrSystem className="icon"/> System Health</Nav.Link>

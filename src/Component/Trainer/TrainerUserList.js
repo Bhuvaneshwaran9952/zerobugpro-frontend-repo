@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Container, Card, Row, Col } from "react-bootstrap";
+import { Table, Button, Container, Card, Row, Col, Pagination } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const TrainerUserList = () => {
   const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,9 @@ const TrainerUserList = () => {
     if (!window.confirm("Are you sure you want to delete this trainer?")) return;
     try {
       await axios.delete(`http://127.0.0.1:8000/trainer/${id}`);
-      setData(data.filter(item => item.id !== id));
+      const updatedData = data.filter(item => item.id !== id);
+      setData(updatedData);
+      setCurrentPage(1); // reset to first page
     } catch (error) {
       console.error("Error deleting data:", error);
     }
@@ -33,13 +37,39 @@ const TrainerUserList = () => {
   const handleAssign = (id) => navigate(`/trainerassign/${id}`);
   const handleView = (id) => navigate(`/viewpage/${id}`);
 
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <Pagination className="justify-content-center mt-3">
+        <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+        <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+        {[...Array(totalPages)].map((_, idx) => (
+          <Pagination.Item
+            key={idx + 1}
+            active={idx + 1 === currentPage}
+            onClick={() => setCurrentPage(idx + 1)}
+          >
+            {idx + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+        <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+      </Pagination>
+    );
+  };
+
   return (
     <Container>
-
-        <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
-          <h2 className="mb-0">Trainer List</h2>
-          <Link to="/trainer/traineruserlist" className="btn btn-warning">Add Trainer  [+]</Link>
-        </div>
+      <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
+        <h2 className="mb-0">Trainer List</h2>
+        <Link to="/trainer/traineruserlist" className="btn btn-warning">Add Trainer  [+]</Link>
+      </div>
 
       {/* Desktop Table View */}
       <div className="d-none d-md-block">
@@ -56,9 +86,9 @@ const TrainerUserList = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
+            {currentItems.map((item, index) => (
               <tr key={item.id}>
-                <td>{index + 1}</td>
+                <td>{indexOfFirstItem + index + 1}</td>
                 <td>{item.name}</td>
                 <td>{item.email}</td>
                 <td>{item.contact}</td>
@@ -74,12 +104,13 @@ const TrainerUserList = () => {
             ))}
           </tbody>
         </Table>
+        {renderPagination()}
       </div>
 
       {/* Mobile Card View */}
       <div className="d-md-none">
         <Row>
-          {data.map((item) => (
+          {currentItems.map((item, index) => (
             <Col xs={12} key={item.id} className="mb-3">
               <Card className="shadow-sm">
                 <Card.Body>
@@ -103,10 +134,10 @@ const TrainerUserList = () => {
             </Col>
           ))}
         </Row>
+        {renderPagination()}
       </div>
     </Container>
   );
 };
 
 export default TrainerUserList;
-  

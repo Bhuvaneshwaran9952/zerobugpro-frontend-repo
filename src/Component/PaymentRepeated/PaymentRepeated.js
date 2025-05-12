@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table, Spinner, Button, Modal } from "react-bootstrap";
+import { Container, Table, Spinner, Button, Modal, Pagination } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const PaymentRepeated = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); 
-  const [deletePaymentId, setDeletePaymentId] = useState(null); 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePaymentId, setDeletePaymentId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paymentsPerPage] = useState(10); // Number of items per page
   const navigate = useNavigate(); // For navigation on Edit
 
   useEffect(() => {
@@ -48,6 +50,13 @@ const PaymentRepeated = () => {
     navigate(`/paymentrepeatedupdate/${id}`);
   };
 
+  // Pagination logic
+  const indexOfLastPayment = currentPage * paymentsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - paymentsPerPage;
+  const currentPayments = payments.slice(indexOfFirstPayment, indexOfLastPayment);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Container className="mt-4">
       {/* Header Section */}
@@ -76,8 +85,8 @@ const PaymentRepeated = () => {
             </tr>
           </thead>
           <tbody>
-            {payments.length > 0 ? (
-              payments.map((item, index) => (
+            {currentPayments.length > 0 ? (
+              currentPayments.map((item, index) => (
                 <tr key={item.id}>
                   <td>{index + 1}</td>
                   <td>{item.name}</td>
@@ -109,6 +118,27 @@ const PaymentRepeated = () => {
           </tbody>
         </Table>
       )}
+
+      {/* Pagination Component */}
+      <Pagination className="d-flex justify-content-center mt-3">
+        <Pagination.Prev
+          onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+          disabled={currentPage === 1}
+        />
+        {Array.from({ length: Math.ceil(payments.length / paymentsPerPage) }).map((_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next
+          onClick={() => setCurrentPage(currentPage < Math.ceil(payments.length / paymentsPerPage) ? currentPage + 1 : currentPage)}
+          disabled={currentPage === Math.ceil(payments.length / paymentsPerPage)}
+        />
+      </Pagination>
 
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>

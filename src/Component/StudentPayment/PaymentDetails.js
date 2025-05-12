@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Table, Container, Button, Card } from "react-bootstrap";
+import { Table, Container, Button, Card, Pagination } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 
 const PaymentDetails = () => {
   const [payments, setPayments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paymentsPerPage] = useState(10); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,14 @@ const PaymentDetails = () => {
     }
   };
 
+  // Calculate the payments to display on the current page
+  const indexOfLastPayment = currentPage * paymentsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - paymentsPerPage;
+  const currentPayments = payments.slice(indexOfFirstPayment, indexOfLastPayment);
+
+  // Handle page change
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Container className="mt-4">
       <div className="card-header d-flex justify-content-between align-items-center bg-secondary text-white p-3">
@@ -57,7 +67,7 @@ const PaymentDetails = () => {
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment, index) => {
+            {currentPayments.map((payment, index) => {
               const dueDate = new Date(payment.due_date);
               const payDate = new Date(payment.pay_date); 
               
@@ -91,11 +101,34 @@ const PaymentDetails = () => {
             })}
           </tbody>
         </Table>
+
+        {/* Pagination for Table View */}
+        <div className="d-flex justify-content-center mt-3">
+          <Pagination>
+            <Pagination.Prev
+              onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+              disabled={currentPage === 1}
+            />
+            {Array.from({ length: Math.ceil(payments.length / paymentsPerPage) }).map((_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPage}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => setCurrentPage(currentPage < Math.ceil(payments.length / paymentsPerPage) ? currentPage + 1 : currentPage)}
+              disabled={currentPage === Math.ceil(payments.length / paymentsPerPage)}
+            />
+          </Pagination>
+        </div>
       </div>
 
       {/* Card View for Mobile Screens */}
       <div className="d-block d-md-none">
-        {payments.map((payment, index) => {
+        {currentPayments.map((payment, index) => {
           const dueDate = new Date(payment.due_date);
           const payDate = new Date(payment.pay_date); 
           
@@ -126,6 +159,34 @@ const PaymentDetails = () => {
             </Card>
           );
         })}
+
+        {/* Pagination for Mobile Screens */}
+        <div className="d-flex justify-content-center mt-3">
+          <Button
+            variant="secondary"
+            onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </Button>
+          {Array.from({ length: Math.ceil(payments.length / paymentsPerPage) }).map((_, index) => (
+            <Button
+              key={index + 1}
+              variant={index + 1 === currentPage ? "primary" : "outline-secondary"}
+              className="mx-1"
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <Button
+            variant="secondary"
+            onClick={() => setCurrentPage(currentPage < Math.ceil(payments.length / paymentsPerPage) ? currentPage + 1 : currentPage)}
+            disabled={currentPage === Math.ceil(payments.length / paymentsPerPage)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </Container>
   );

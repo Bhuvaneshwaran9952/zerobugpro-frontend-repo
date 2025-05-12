@@ -17,6 +17,7 @@ const InterviewForm = () => {
     information: "",
     skills: "",
     duration: "",
+    experience: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +46,7 @@ const InterviewForm = () => {
       newErrors.contact = "Contact must be 10 digits.";
     if (!formData.location) newErrors.location = "Location is required.";
     if (!formData.details) newErrors.details = "Details are required.";
+    if (!formData.experience) newErrors.details = "Experience are required"
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; 
@@ -72,6 +74,7 @@ const InterviewForm = () => {
     data.append("duration", formData.duration);
     data.append("details", formData.details);
     data.append("information", formData.information);
+    data.append("experience", formData.experience);
 
     const skillsArray = formData.skills
       .split(",")
@@ -218,6 +221,17 @@ const InterviewForm = () => {
               isInvalid={!!errors.skills}
             />
             <Form.Control.Feedback type="invalid">{errors.skills}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group controlId="formExperience" className="mb-3">
+            <Form.Label>Experience</Form.Label>
+            <Form.Control
+              type="text"
+              name="experience"
+              value={formData.experience}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
 
           <Form.Group controlId="formDuration" className="mb-3">

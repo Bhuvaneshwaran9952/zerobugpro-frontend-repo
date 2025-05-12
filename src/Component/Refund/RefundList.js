@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Container, Table } from "react-bootstrap";
+import { Button, Card, Container, Table, Pagination } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
 const RefundList = () => {
     const [refunds, setRefunds] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [refundsPerPage] = useState(10); // Adjust the number of items per page
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +35,14 @@ const RefundList = () => {
         }
     };
 
+    // Calculate the refunds to show on the current page
+    const indexOfLastRefund = currentPage * refundsPerPage;
+    const indexOfFirstRefund = indexOfLastRefund - refundsPerPage;
+    const currentRefunds = refunds.slice(indexOfFirstRefund, indexOfLastRefund);
+
+    // Handle page change
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
         <Container className="mt-4">
             {/* Header */}
@@ -54,8 +64,8 @@ const RefundList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {refunds.length > 0 ? (
-                            refunds.map((refund, index) => (
+                        {currentRefunds.length > 0 ? (
+                            currentRefunds.map((refund, index) => (
                                 <tr key={refund.id}>
                                     <td>{index + 1}</td>
                                     <td>{refund.student_name}</td>
@@ -87,12 +97,33 @@ const RefundList = () => {
                         )}
                     </tbody>
                 </Table>
+
+                {/* Pagination Component for Desktop */}
+                <Pagination className="d-flex justify-content-center mt-3">
+                    <Pagination.Prev
+                        onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+                        disabled={currentPage === 1}
+                    />
+                    {Array.from({ length: Math.ceil(refunds.length / refundsPerPage) }).map((_, index) => (
+                        <Pagination.Item
+                            key={index + 1}
+                            active={index + 1 === currentPage}
+                            onClick={() => paginate(index + 1)}
+                        >
+                            {index + 1}
+                        </Pagination.Item>
+                    ))}
+                    <Pagination.Next
+                        onClick={() => setCurrentPage(currentPage < Math.ceil(refunds.length / refundsPerPage) ? currentPage + 1 : currentPage)}
+                        disabled={currentPage === Math.ceil(refunds.length / refundsPerPage)}
+                    />
+                </Pagination>
             </div>
 
             {/* Mobile Card View */}
             <div className="d-md-none mt-3">
-                {refunds.length > 0 ? (
-                    refunds.map((refund, index) => (
+                {currentRefunds.length > 0 ? (
+                    currentRefunds.map((refund, index) => (
                         <Card key={refund.id} className="mb-3 shadow-sm">
                             <Card.Body>
                                 <Card.Title className="mb-2">
@@ -125,6 +156,34 @@ const RefundList = () => {
                 ) : (
                     <p>No refund records found.</p>
                 )}
+
+                {/* Pagination for Mobile Screens */}
+                <div className="d-flex justify-content-center mt-3">
+                    <Button
+                        variant="secondary"
+                        onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Prev
+                    </Button>
+                    {Array.from({ length: Math.ceil(refunds.length / refundsPerPage) }).map((_, index) => (
+                        <Button
+                            key={index + 1}
+                            variant={index + 1 === currentPage ? "primary" : "outline-secondary"}
+                            className="mx-1"
+                            onClick={() => paginate(index + 1)}
+                        >
+                            {index + 1}
+                        </Button>
+                    ))}
+                    <Button
+                        variant="secondary"
+                        onClick={() => setCurrentPage(currentPage < Math.ceil(refunds.length / refundsPerPage) ? currentPage + 1 : currentPage)}
+                        disabled={currentPage === Math.ceil(refunds.length / refundsPerPage)}
+                    >
+                        Next
+                    </Button>
+                </div>
             </div>
         </Container>
     );
