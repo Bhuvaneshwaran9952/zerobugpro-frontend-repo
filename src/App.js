@@ -30,7 +30,7 @@ import InterviewCards from './Component/Interview/InterviewCards';
 import InterviewDetails from './Component/Interview/InterviewDetails';
 import AddInterview from './Component/Interview/AddInterview';
 import InterviewUpdate from './Component/Interview/InterviewUpdate';
-import Cards from './Publicview/Cards';
+import Cards from './Component/Publicview/Cards';
 
 function App() {
   return (
