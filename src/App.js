@@ -31,6 +31,8 @@ import InterviewDetails from './Component/Interview/InterviewDetails';
 import AddInterview from './Component/Interview/AddInterview';
 import InterviewUpdate from './Component/Interview/InterviewUpdate';
 import Cards from './Component/Publicview/Cards';
+import Apply from './Component/Publicview/Apply';
+import ApplyForm from './Component/Publicview/ApplyForm';
 
 function App() {
   return (
@@ -68,6 +70,8 @@ function App() {
             <Route path='/add-interview' element={<AddInterview/>}/>
             <Route path="/interviewcards/interviewupdate/:id" element={<InterviewUpdate />} />
             <Route path='/publicview' element={<Cards/>}/>
+            <Route path="/apply/:id" element={<Apply />} />
+            <Route path="/applyform/:id" element={<ApplyForm/>}/>
           </Routes>
         </BrowserRouter>
         <ToastContainer className="toast-position"

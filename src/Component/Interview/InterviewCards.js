@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Container, Row, Col, Button, Form } from "react-bootstrap";
+import { Card, Container, Row, Col, Button, Form, Pagination } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
@@ -11,7 +11,9 @@ const InterviewCards = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const itemsPerPage = 10;  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,15 +31,15 @@ const InterviewCards = () => {
     fetchInterviews();
   }, []);
 
-  // Filter interviews based on search
   useEffect(() => {
     const term = searchTerm.toLowerCase();
     const filtered = interviewData.filter(
       (item) =>
         item.jobTitle.toLowerCase().includes(term) ||
-        item.location.toLowerCase(). includes(term)
+        item.location.toLowerCase().includes(term)
     );
     setFilteredData(filtered);
+    setCurrentPage(1); // Reset to first page on search
   }, [searchTerm, interviewData]);
 
   const handleDelete = async (id) => {
@@ -51,6 +53,31 @@ const InterviewCards = () => {
       alert("Failed to delete interview. Try again.");
     }
   };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const currentItems = filteredData.slice(startIdx, startIdx + itemsPerPage);
+
+  const renderPagination = () => (
+    <Pagination className="justify-content-center mt-3">
+      <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+      <Pagination.Prev onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} />
+
+      {Array.from({ length: totalPages }, (_, i) => (
+        <Pagination.Item
+          key={i + 1}
+          active={i + 1 === currentPage}
+          onClick={() => setCurrentPage(i + 1)}
+        >
+          {i + 1}
+        </Pagination.Item>
+      ))}
+
+      <Pagination.Next onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} />
+      <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+    </Pagination>
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -67,25 +94,25 @@ const InterviewCards = () => {
 
       {/* Search Bar */}
       <Form className="mb-4">
-      <div className="input-group">
-        <span className="input-group-text">
-          <i className="bi bi-search"><FaSearch /></i>
-        </span>
-        <Form.Control
-          type="text"
-          placeholder="Search by Job title or Location ..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+        <div className="input-group">
+          <span className="input-group-text">
+            <FaSearch />
+          </span>
+          <Form.Control
+            type="text"
+            placeholder="Search by Job title or Location ..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </Form>
 
       {/* Interview Cards */}
       <Row>
-        {filteredData.length === 0 ? ( 
+        {currentItems.length === 0 ? (
           <div className="text-muted px-3">No interviews found.</div>
         ) : (
-          filteredData.map((item) => (
+          currentItems.map((item) => (
             <Col key={item.id} md={4} sm={6} className="mb-4 d-flex">
               <Card
                 className={`interview-card w-100 ${
@@ -111,7 +138,7 @@ const InterviewCards = () => {
                       Date: {item.date}
                     </Card.Subtitle>
                     <h5 className="mb-2 text-muted">{item.jobTitle}</h5>
-                    <p><strong className="mb-2 text-muted">{item.location}</strong></p>
+                    <p><strong className="text-muted">{item.location}</strong></p>
                     <Card.Text
                       style={{
                         overflow: "hidden",
@@ -162,6 +189,9 @@ const InterviewCards = () => {
           ))
         )}
       </Row>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && renderPagination()}
     </Container>
   );
 };

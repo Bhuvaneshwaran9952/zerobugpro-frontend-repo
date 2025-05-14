@@ -199,7 +199,7 @@ const InterviewForm = () => {
             </Col>
           </Row>
 
-          <Form.Group controlId="formLocation">
+          <Form.Group controlId="formLocation" className="mb-3">
                 <Form.Label>Location</Form.Label>
                 <Form.Control
                   type="text"
