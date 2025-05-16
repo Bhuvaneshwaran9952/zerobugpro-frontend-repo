@@ -1,6 +1,8 @@
 import React, { useState } from "react"; 
 import { Container, Card, CloseButton, Form, Row, Col, Button, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ApplyForm = () => {
   const [formValue, setFormValue] = useState({
@@ -17,6 +19,7 @@ const ApplyForm = () => {
 
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,11 +61,38 @@ const ApplyForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      setSubmitted(true);
-      console.log("Form Submitted", formValue);
+      const formData = new FormData();
+      formData.append('resum', formValue.resum);
+      formData.append("name", formValue.name);
+      formData.append("contact", formValue.contact);
+      formData.append("email", formValue.email);
+      formData.append("location", formValue.location);
+      formData.append("skills", formValue.skills);
+      formData.append("experience", formValue.experience);
+      formData.append('current_salary', formValue.currentsalary);
+      formData.append('expected_salary', formValue.expatsalary);
+  
+      try {
+        const response = await axios.post("http://localhost:8000/apply/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+  
+        console.log("Success:", response.data);
+        setSubmitted(true);
+  
+        // Wait 2 seconds then navigate
+        setTimeout(() => {
+          navigate('/publicview');
+        }, 2000);
+  
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
     } else {
       setSubmitted(false);
     }
@@ -153,7 +183,9 @@ const ApplyForm = () => {
           </Row>
 
           <div className="text-center">
-            <Button variant="primary" type="submit" className="p-2">Submit</Button>
+          <Button variant="primary" type="submit" className="p-2">
+            Submit
+          </Button>
           </div>
         </Form>
       </Card>
