@@ -4,11 +4,13 @@ import CloseButton from "react-bootstrap/CloseButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "./ViewPage.css";
+import {getAllView, deleteView} from "../../Server/ViewServer"
 
 const ViewPage = () => {
   const [assignments, setAssignments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [assignmentsPerPage] = useState(10); // Adjust the number of items per page
+  const [assignmentsPerPage] = useState(10); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAssignments();
@@ -16,19 +18,22 @@ const ViewPage = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/view");
-      setAssignments(response.data || []);
+      setLoading(true);
+      const data = await getAllView();
+      setAssignments(data || []);
     } catch (error) {
       console.error("Error fetching assignments:", error);
       setAssignments([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this assignment?")) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/view/${id}`);
-      setAssignments(assignments.filter((assignment) => assignment.id !== id));
+    await deleteView(id);
+    setAssignments(assignments.filter((assignment) => assignment.id !== id));
     } catch (error) {
       console.error("Error deleting assignment:", error);
     }

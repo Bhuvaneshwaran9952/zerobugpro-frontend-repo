@@ -3,6 +3,7 @@ import { Table, Container, Button, Card, Pagination } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
+import {getAllTrainerPayment, deleteTrainerPayment} from "../../Server/TrainerPaymentServer"
 
 const TrainerPayment = () => {
   const [payments, setPayments] = useState([]);
@@ -16,8 +17,8 @@ const TrainerPayment = () => {
 
   const fetchPayments = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/trainerpayment");
-      setPayments(response.data);
+      const data = await getAllTrainerPayment(); 
+      setPayments(data); 
     } catch (error) {
       console.error("Error fetching payments:", error);
     }
@@ -26,7 +27,7 @@ const TrainerPayment = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this payment?")) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/trainerpayment/${id}/`);
+     const data = await deleteTrainerPayment(id); 
         setPayments(payments.filter((payment) => payment.id !== id));
         alert("Payment deleted successfully!");
       } catch (error) {

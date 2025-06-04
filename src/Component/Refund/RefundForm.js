@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, Container, Card, CloseButton } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import {createRefund} from "../../Server/RefundServer"
 
 const RefundForm = () => {
     const [studentName, setStudentName] = useState("");
@@ -27,7 +28,7 @@ const RefundForm = () => {
         };
 
         try {
-            await axios.post("http://127.0.0.1:8000/refund/", newRefund);
+            const response = await createRefund(newRefund);
             alert("Refund added successfully!");
             navigate("/refundlist");
         } catch (error) {

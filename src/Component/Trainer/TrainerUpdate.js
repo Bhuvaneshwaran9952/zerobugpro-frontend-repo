@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import CloseButton from "react-bootstrap/CloseButton";
-import axios from "axios";
 import Select from "react-select";
+import {getTrainerById, updateTrainer} from "../../Server/TrainerServer"
 
 const TrainerUpdate = () => {
     const { id } = useParams();
@@ -33,26 +33,27 @@ const TrainerUpdate = () => {
 
     useEffect(() => {
         fetchTrainerData();
+        console.log("Trainer ID:", id);
     }, [id]);
 
     const fetchTrainerData = async () => {
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/trainer/${id}`);
-            const fetchedData = response.data;
-            setFormData({
-                name: fetchedData.name || "", 
-                email: fetchedData.email || "",
-                contact: fetchedData.contact || "",
-                subject: Array.isArray(fetchedData.subject)
-                    ? fetchedData.subject.map(sub => ({ value: sub, label: sub }))
-                    : [],
-                address: fetchedData.address || "",
-                is_active: fetchedData.is_active ?? true,
-            });
-        } catch (error) {
-            console.error("Error fetching trainer data:", error);
-        }
+    try {
+        const fetchedData = await getTrainerById(id);
+        setFormData({
+        name: fetchedData.name || "",
+        email: fetchedData.email || "",
+        contact: fetchedData.contact || "",
+        subject: Array.isArray(fetchedData.subject)
+            ? fetchedData.subject.map((sub) => ({ value: sub, label: sub }))
+            : [],
+        address: fetchedData.address || "",
+        is_active: fetchedData.is_active ?? true,
+        });
+    } catch (error) {
+        console.error("Error fetching trainer data:", error);
+    }
     };
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,20 +67,20 @@ const TrainerUpdate = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();  
-        try {
-            await axios.put(`http://127.0.0.1:8000/trainer/${id}`, {
-                name: formData.name,
-                email: formData.email,
-                contact: formData.contact,
-                subject: formData.subject.map(sub => sub.value),
-                address: formData.address,
-                is_active: formData.is_active
-            });
-            navigate("/trainer"); 
-        } catch (error) {
-            console.error("Error updating trainer:", error.response?.data || error);
-        }
+    e.preventDefault();
+    try {
+        await updateTrainer(id, {
+        name: formData.name,
+        email: formData.email,
+        contact: formData.contact,
+        subject: formData.subject.map((sub) => sub.value),
+        address: formData.address,
+        is_active: formData.is_active,
+        });
+        navigate("/trainer");
+    } catch (error) {
+        console.error("Error updating trainer:", error.response?.data || error);
+    }
     };
 
     return (

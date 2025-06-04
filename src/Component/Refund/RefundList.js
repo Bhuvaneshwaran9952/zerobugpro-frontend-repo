@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Container, Table, Pagination } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import {getAllRefund, deleteRefund} from "../../Server/RefundServer"
 
 const RefundList = () => {
     const [refunds, setRefunds] = useState([]);
@@ -14,18 +15,18 @@ const RefundList = () => {
     }, []);
 
     const fetchRefunds = async () => {
-        try {
-            const response = await axios.get("http://127.0.0.1:8000/refund");
-            setRefunds(response.data);
-        } catch (error) {
-            console.error("Error fetching refund data:", error);
-        }
+    try {
+        const refundsData = await getAllRefund();
+        setRefunds(refundsData);
+    } catch (error) {
+        console.error("Error fetching refund data:", error);
+    }
     };
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this refund record?")) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/refund/${id}/`);
+                const response = await deleteRefund(id);
                 setRefunds(refunds.filter((r) => r.id !== id));
                 alert("Refund deleted successfully.");
             } catch (error) {

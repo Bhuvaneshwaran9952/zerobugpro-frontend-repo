@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Container, Form } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+import {getRepeatedPaymentsById, updateRepeatedPayments} from "../../Server/RepeatedPaymentsServer";
 
 const PaymentRepeatedUpdate = () => {
   const { id } = useParams();
@@ -16,10 +17,18 @@ const PaymentRepeatedUpdate = () => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8000/repeatedpayments/${id}`)
-      .then((response) => setFormData(response.data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchData = async () => {
+      try {
+        const response = await getRepeatedPaymentsById(id); 
+        setFormData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
   }, [id]);
 
   const handleChange = (e) => {
@@ -30,7 +39,7 @@ const PaymentRepeatedUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://127.0.0.1:8000/repeatedpayments/${id}`, formData);
+      const response = await updateRepeatedPayments(formData); 
       setShowSuccessAlert(true);
       setTimeout(() => {
         setShowSuccessAlert(false);

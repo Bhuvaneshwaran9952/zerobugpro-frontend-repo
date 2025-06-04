@@ -50,7 +50,7 @@ export const FunctionAddUser = (data) => {
           toast.success("User added successfully.");
       })
       .catch((err) => {
-          console.error("Error:", err.response?.data); // Log full error response
+          console.error("Error:", err.response?.data);
           dispatch(failRequest(err.message));
       });
   };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Form, Button, Row, Col, Card, CloseButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import {createInterview} from "../../Server/InterviewServer"
 
 const InterviewForm = () => {
   const navigate = useNavigate();
@@ -52,56 +53,57 @@ const InterviewForm = () => {
     return Object.keys(newErrors).length === 0; 
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-  
-    const isValid = validate();
-    if (!isValid) {
-      setIsSubmitting(false);
-      return;
-    }
-  
-    const data = new FormData();
-    data.append("logo", formData.logo);
-    data.append("company", formData.company);
-    data.append("jobTitle", formData.jobTitle);
-    data.append("date", formData.date);
-    data.append("contact", formData.contact);
-    data.append("email", formData.email)
-    data.append("location", formData.location);
-    data.append("skills", formData.skills);
-    data.append("duration", formData.duration);
-    data.append("details", formData.details);
-    data.append("information", formData.information);
-    data.append("experience", formData.experience);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    const skillsArray = formData.skills
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter((skill) => skill.length > 0);
-  
-    skillsArray.forEach((skill) => {
-      data.append("skills", skill); 
-    });
-  
-    try {
-      const response = await fetch("http://127.0.0.1:8000/interviews/", {
-        method: "POST",
-        body: data,
-      });
-  
-      if (response.ok) {
-        console.log("Interview submitted successfully");
-        navigate("/interviewcards");
-      } else {
-        console.error("Failed to submit interview:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+  const isValid = validate();
+  if (!isValid) {
+    setIsSubmitting(false);
+    return;
+  }
+
+  const data = new FormData();
+  if (formData.logo) {
+    data.append("logo", formData.logo);
+  }
+  data.append("company", formData.company);
+  data.append("jobTitle", formData.jobTitle);
+  data.append("date", formData.date);
+  data.append("contact", formData.contact);
+  data.append("email", formData.email);
+  data.append("location", formData.location);
+  data.append("duration", formData.duration);
+  data.append("details", formData.details);
+  data.append("information", formData.information);
+  data.append("experience", formData.experience);
+
+  const skillsArray = formData.skills
+    .split(",")
+    .map((skill) => skill.trim())
+    .filter((skill) => skill.length > 0);
+
+  skillsArray.forEach((skill) => {
+    data.append("skills", skill);
+  });
+
+  try {
+    const response = await createInterview(data); // pass only data if your function expects that
+
+    // Axios-style response status check
+    if (response.status >= 200 && response.status < 300) {
+      console.log("Interview submitted successfully");
+      navigate("/interviewcards");
+    } else {
+      console.error("Failed to submit interview:", response);
     }
-  };
-  
+  } catch (error) {
+    console.error("Error submitting form:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+ 
 
   return (
     <Container className="mt-4">

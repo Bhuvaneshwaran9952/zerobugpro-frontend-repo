@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Card, Alert } from "react-bootstrap";
 import CloseButton from "react-bootstrap/CloseButton";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addTrainer } from "../../Redux/TrainerReducer";
-import axios from "axios";
 import Select from "react-select";
+import { createTrainer,getAllTrainer } from "../../Server/TrainerServer";
 
 const Trainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [trainerList, setTrainerList] = useState([]);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -34,7 +35,7 @@ const Trainer = () => {
 
   const fetchTrainers = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/trainer");
+      const response = await getAllTrainer();
       setTrainerList(response.data);
     } catch (error) {
       console.error("Error fetching trainers:", error);
@@ -77,17 +78,29 @@ const Trainer = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    dispatch(addTrainer(formData));
     try {
-      const response = await axios.post("http://127.0.0.1:8000/trainer", formData);
-      setTrainerList([...trainerList, response.data]);
+      console.log("Submitting form data:", formData);
+      const response = await createTrainer(formData);
+      setTrainerList(prevList => [...(Array.isArray(prevList) ? prevList : []), response.data]);
       setFormData({ name: "", email: "", contact: "", subject: [], address: "" });
-      navigate("/trainer");
+      setError("");
+      setSuccess("Trainer registered successfully!");
+      
+      // Optionally navigate after a delay, or remove navigate to stay on page
+      // setTimeout(() => navigate("/trainer"), 2000);
     } catch (error) {
-      console.error("Error saving trainer:", error);
+      console.error("Full error object:", error);
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+      }
       setError("Failed to save trainer. Please try again.");
+      setSuccess("");
     }
   };
+
+
+
 
   return (
     <Container className="mt-4">
@@ -102,6 +115,7 @@ const Trainer = () => {
             </Card.Header>
             <Card.Body>
               {error && <Alert variant="danger">{error}</Alert>}
+              {success && <Alert variant="success" onClose={() => setSuccess("")} dismissible>{success}</Alert>}
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Name</Form.Label>

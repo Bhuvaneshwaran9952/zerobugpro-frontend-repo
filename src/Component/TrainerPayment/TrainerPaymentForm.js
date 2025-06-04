@@ -5,6 +5,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import {createTrainerPayment} from "../../Server/TrainerPaymentServer";
 
 // Validation Schema
 const schema = yup.object().shape({
@@ -32,9 +33,18 @@ const TrainerPaymentForm = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
+
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://127.0.0.1:8000/trainerpayment", data);
+      const payload = {
+        ...data,
+        pay_date: new Date(data.pay_date).toISOString().split('T')[0],
+        due_date: new Date(data.due_date).toISOString().split('T')[0],
+      };
+
+      console.log("Payload being sent:", payload); // ✅ Confirm it's correct
+
+      const response = await createTrainerPayment(payload);
       alert("Payment saved successfully!");
       navigate("/trainerpayment");
     } catch (error) {

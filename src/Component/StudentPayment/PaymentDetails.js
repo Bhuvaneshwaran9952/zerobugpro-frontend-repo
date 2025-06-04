@@ -3,6 +3,7 @@ import { Table, Container, Button, Card, Pagination } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
+import {getAllStudentPayment, deleteStudentPayment} from "../../Server/StudentPaymentServer"
 
 const PaymentDetails = () => {
   const [payments, setPayments] = useState([]);
@@ -14,19 +15,19 @@ const PaymentDetails = () => {
     fetchPayments();
   }, []);
 
-  const fetchPayments = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/payment");
-      setPayments(response.data);
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-    }
-  };
+const fetchPayments = async () => {
+  try {
+    const data = await getAllStudentPayment(); 
+    setPayments(data);
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+  }
+};
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this payment?")) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/payment/${id}/`);
+     const data = await deleteStudentPayment(id); 
         setPayments(payments.filter(payment => payment.id !== id));
         alert("Payment deleted successfully!");
       } catch (error) {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
 import './InterviewCard.css';
+import {getAllInterview, deleteInterview} from "../../Server/InterviewServer"
 
 const InterviewCards = () => {
   const [interviewData, setInterviewData] = useState([]);
@@ -12,6 +13,7 @@ const InterviewCards = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  
 
   const itemsPerPage = 10;  
   const navigate = useNavigate();
@@ -19,9 +21,9 @@ const InterviewCards = () => {
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/interviews/");
-        setInterviewData(response.data);
-        setFilteredData(response.data);
+        const response = await getAllInterview();
+        setInterviewData(response);
+        setFilteredData(response);
       } catch (err) {
         setError("Error fetching data");
       } finally {
@@ -36,7 +38,8 @@ const InterviewCards = () => {
     const filtered = interviewData.filter(
       (item) =>
         item.jobTitle.toLowerCase().includes(term) ||
-        item.location.toLowerCase().includes(term)
+        item.location.toLowerCase().includes(term) ||
+        item.company.toLowerCase().includes(term)  
     );
     setFilteredData(filtered);
     setCurrentPage(1); // Reset to first page on search
@@ -44,7 +47,7 @@ const InterviewCards = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/interviews/${id}`);
+      const response = await deleteInterview(id);
       const updated = interviewData.filter((item) => item.id !== id);
       setInterviewData(updated);
       setFilteredData(updated);
@@ -100,7 +103,7 @@ const InterviewCards = () => {
           </span>
           <Form.Control
             type="text"
-            placeholder="Search by Job title or Location ..."
+            placeholder="Search by Job title, Location, Company Name ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

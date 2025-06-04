@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Container, Card, Row, Col, Pagination } from "react-bootstrap";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import {getAllTrainer, deleteTrainer} from "../../Server/TrainerServer";
 
 const TrainerUserList = () => {
   const [data, setData] = useState([]);
@@ -15,8 +15,8 @@ const TrainerUserList = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/trainer");
-      setData(response.data);
+      const response = await getAllTrainer();
+      setData(response);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -26,7 +26,7 @@ const TrainerUserList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this trainer?")) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/trainer/${id}`);
+      const response = await deleteTrainer(id);
       const updatedData = data.filter(item => item.id !== id);
       setData(updatedData);
       setCurrentPage(1); // reset to first page

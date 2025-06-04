@@ -26,10 +26,10 @@ const Cards = () => {
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
-  const allLocations = [...new Set(fullData.map(item => item.location).filter(Boolean))].sort();
-  const allJobTitles = [...new Set(fullData.map(item => item.jobTitle).filter(Boolean))].sort();
-  const allDurations = [...new Set(fullData.map(item => item.duration).filter(Boolean))].sort();
-  const allExperiences = [...new Set(fullData.map(item => item.experience).filter(Boolean))].sort();
+  const allLocations = [...new Set(fullData.map(item => item.location).filter(Boolean))];
+  const allJobTitles = [...new Set(fullData.map(item => item.jobTitle).filter(Boolean))];
+  const allDurations = [...new Set(fullData.map(item => item.duration).filter(Boolean))];
+  const allExperiences = [...new Set(fullData.map(item => item.experience).filter(Boolean))];
   
   
 
@@ -129,6 +129,7 @@ const Cards = () => {
     setSelectedExperience([]);
     setSearchTerm("");
   };
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;

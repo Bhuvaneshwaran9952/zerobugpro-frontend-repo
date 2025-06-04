@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Table, Spinner, Button, Modal, Pagination } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {getAllRepeatedPayments, deleteRepeatedPayments} from "../../Server/RepeatedPaymentsServer"
 
 const PaymentRepeated = () => {
   const [payments, setPayments] = useState([]);
@@ -12,20 +13,20 @@ const PaymentRepeated = () => {
   const [paymentsPerPage] = useState(10); // Number of items per page
   const navigate = useNavigate(); // For navigation on Edit
 
-  useEffect(() => {
-    fetchPayments();
-  }, []);
+    const fetchPayments = async () => {
+      try {
+        const data = await getAllRepeatedPayments();
+        setPayments(data);
+      } catch (error) {
+        console.error("Error fetching repeated payments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchPayments = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/repeatedpayments");
-      setPayments(response.data);
-    } catch (error) {
-      console.error("Error fetching repeated payments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+      fetchPayments();
+    }, []);
 
   const handleShowDeleteModal = (id) => {
     setDeletePaymentId(id);
@@ -34,7 +35,7 @@ const PaymentRepeated = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/repeatedpayments/${deletePaymentId}`);
+      const response = await deleteRepeatedPayments(deletePaymentId);
       setPayments(payments.filter(payment => payment.id !== deletePaymentId));
       setShowDeleteModal(false);
     } catch (error) {

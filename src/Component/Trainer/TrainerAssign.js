@@ -3,6 +3,9 @@ import { Form, Button, Container, Spinner, Alert } from "react-bootstrap";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import {getTrainerById} from "../../Server/TrainerServer"
+import {createView} from "../../Server/ViewServer"
+import {getAllStudent} from "../../Server/StudentServer"
 
 const TrainerAssign = () => {
   const { trainerId } = useParams(); 
@@ -23,19 +26,20 @@ const TrainerAssign = () => {
 
   const fetchTrainer = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/trainer/${trainerId}`);
-      setTrainerName(response.data.name || "N/A");
-      setSubject(response.data.subject || "N/A");
+      const fetchedData = await getTrainerById(trainerId); 
+      setTrainerName(fetchedData.name || "N/A");
+      setSubject(fetchedData.subject || "N/A");
     } catch (error) {
       console.error("Error fetching trainer:", error);
       setError("Failed to load trainer details.");
     }
   };
 
+
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/users/");
-      setStudents(response.data.map(student => ({ value: student.id, label: student.name })));
+      const response = await getAllStudent(); // response is already the data
+      setStudents(response.map(student => ({ value: student.id, label: student.name })));
     } catch (error) {
       console.error("Error fetching students:", error);
       setError("Failed to load students.");
@@ -68,7 +72,7 @@ const TrainerAssign = () => {
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/view", assignedData);
+      const response = await createView(assignedData);
       alert("Assignment saved successfully!");
       navigate("/viewpage");
     } catch (error) {

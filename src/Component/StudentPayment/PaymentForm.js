@@ -5,6 +5,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import {createStudentPayment} from "../../Server/StudentPaymentServer";
 
 // Validation Schema
 const schema = yup.object().shape({
@@ -32,16 +33,32 @@ const PaymentForm = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmit = async (data) => {
-    try {
-      await axios.post("http://127.0.0.1:8000/payment", data);
-      alert("Payment saved successfully!");
-      navigate("/paymentdetails");
-    } catch (error) {
-      console.error("Error saving payment:", error);
-      alert("Failed to save payment.");
-    }
-  };
+const onSubmit = async (data) => {
+  try {
+    // Convert pay_date and due_date to YYYY-MM-DD strings if they are Date objects
+    const formatDate = (date) => {
+      if (!date) return null;
+      if (typeof date === "string") return date; // Already a string
+      if (date instanceof Date) {
+        return date.toISOString().split("T")[0]; // format to YYYY-MM-DD
+      }
+      return date; // fallback
+    };
+
+    const cleanedData = {
+      ...data,
+      pay_date: formatDate(data.pay_date),
+      due_date: formatDate(data.due_date),
+    };
+
+    const response = await createStudentPayment(cleanedData);
+    alert("Payment saved successfully!");
+    navigate("/paymentdetails");
+  } catch (error) {
+    console.error("Error saving payment:", error.response?.data || error.message);
+    alert("Failed to save payment.");
+  }
+};
 
   return (
     <Container className="mt-4">

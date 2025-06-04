@@ -3,6 +3,7 @@ import { Form, Button, Container, Row, Col, Card, CloseButton } from "react-boot
 import axios from "axios";
 import { useNavigate , useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import {getStudentPaymentById, updateStudentPayment} from "../../Server/StudentPaymentServer"
 
 const PaymentUpdate = () => {
   const { id } = useParams();
@@ -18,13 +19,15 @@ const PaymentUpdate = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPayment();
+   if (id) {
+      fetchPayment(id);
+    }
   }, [id])
 
-  const fetchPayment = async () => {
+  const fetchPayment = async (paymentId) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/payment/${id}/`);
-      setPayment(response.data || {});
+      const paymentData = await getStudentPaymentById(paymentId);
+      setPayment(paymentData || {});
       setLoading(false);
     } catch (error) {
       console.error("Error fetching payment:", error);
@@ -43,18 +46,16 @@ const PaymentUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        
-
-      await axios.put(`http://127.0.0.1:8000/payment/${id}/`, payment);
-      alert("Payment updated successfully");  
-      console.log("Navigating to /paymentdetails"); 
+      console.log("Updating payment with data:", payment); 
+      const updatedPayment = await updateStudentPayment(id, payment);
+      alert("Payment updated successfully");
       navigate("/paymentdetails");
     } catch (error) {
-      console.error("Error updating payment:", error);
-      alert("Payment updated Faild..");
+      console.error("Error updating payment:", error.response?.data || error.message);
+      alert("Payment update failed.");
     }
   };
-
+  
   return (
     <Container className="mt-4">
       <Card.Header className="d-flex justify-content-between align-items-center bg-secondary text-white p-3">

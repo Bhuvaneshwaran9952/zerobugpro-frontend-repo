@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Image, Card, CloseButton } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import {createRepeatedPayments} from "../../Server/RepeatedPaymentsServer"
 
 const RepeatedForm = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ const RepeatedForm = () => {
     const newPayment = { ...formData };
 
     try {
-      await axios.post("http://127.0.0.1:8000/repeatedpayments", newPayment);
+      const response = await createRepeatedPayments(newPayment);
       alert("Payment added successfully!");
       navigate("/paymentrepeated");
     } catch (error) {

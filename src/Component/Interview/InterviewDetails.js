@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Spinner } from 'react-bootstrap'; 
+import {getInterviewById} from "../../Server/InterviewServer"
 
 const InterviewDetails = () => {
   const { id } = useParams();
@@ -13,17 +14,24 @@ const InterviewDetails = () => {
   useEffect(() => {
     const fetchInterview = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/interviews/${id}`);
-        setInterview(response.data);
-        setLoading(false);
+        const data = await getInterviewById(id);
+        console.log("Fetched interview:", data);
+        setInterview(data);
       } catch (err) {
-        setError('Failed to fetch interview details');
+        setError("Failed to fetch interview details");
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchInterview();
+    if (id) {
+      fetchInterview();
+    }
   }, [id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+  if (!interview) return <p>No interview data found.</p>;
 
   if (loading) {
     return (

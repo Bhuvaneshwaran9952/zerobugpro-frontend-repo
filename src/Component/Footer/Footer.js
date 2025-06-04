@@ -27,6 +27,7 @@ const Footer = () => {
               <li><a href="/refundlist" className="text-light" style={{textDecoration: "none"}}>Refund List</a></li>
               <li><a href="/paymentrepeated" className="text-light" style={{textDecoration: "none"}}>Pay</a></li>
               <li><a href="/interviewcards" className="text-light" style={{textDecoration: "none"}}>Interview Detials</a></li>
+              <li><a href="/publicview" className="text-light" style={{textDecoration: "none"}}>Public View</a></li>
             </ul>
           </Col>
 

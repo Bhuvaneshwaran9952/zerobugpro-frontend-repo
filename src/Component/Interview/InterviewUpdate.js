@@ -9,6 +9,7 @@ import {
   Card,
   CloseButton,
 } from "react-bootstrap";
+import {getInterviewById, updateInterview } from "../../Server/InterviewServer";
 
 const InterviewUpdate = () => {
   const { id } = useParams();
@@ -35,24 +36,19 @@ const InterviewUpdate = () => {
   useEffect(() => {
     const fetchInterview = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/interviews/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setFormData({
-            ...data,
-            skills: (data.skills || []).join(", "),
-            logo: "", // Don't preload file input
-          });
-          setExistingLogo(data.logo_filename);
-        } else {
-          console.error("Failed to fetch interview");
-        }
+        const data = await getInterviewById(id);
+        setFormData({
+          ...data,
+          skills: (data.skills || []).join(", "),
+          logo: "", // Don't preload file input
+        });
+        setExistingLogo(data.logo_filename);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching interview:", error);
       }
     };
 
-    fetchInterview();
+    if (id) fetchInterview();
   }, [id]);
 
   const handleChange = (e) => {
@@ -84,56 +80,56 @@ const InterviewUpdate = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    const isValid = validate();
-    if (!isValid) {
-      setIsSubmitting(false);
-      return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  const isValid = validate();
+  if (!isValid) {
+    setIsSubmitting(false);
+    return;
+  }
+
+  const data = new FormData();
+  if (formData.logo) {
+    data.append("logo", formData.logo);
+  }
+  data.append("company", formData.company);
+  data.append("jobTitle", formData.jobTitle);
+  data.append("date", formData.date);
+  data.append("contact", formData.contact);
+  data.append("email", formData.email);
+  data.append("location", formData.location);
+  data.append("duration", formData.duration);
+  data.append("experience", formData.experience);
+  data.append("details", formData.details);
+  data.append("information", formData.information);
+
+  const skillsArray = formData.skills
+    .split(",")
+    .map((skill) => skill.trim())
+    .filter((skill) => skill.length > 0);
+
+  skillsArray.forEach((skill) => {
+    data.append("skills", skill);
+  });
+
+  try {
+    const response = await updateInterview(id, data); // pass form data here
+
+    // Axios response status code check
+    if (response.status >= 200 && response.status < 300) {
+      console.log("Interview updated successfully");
+      navigate("/interviewcards");
+    } else {
+      console.error("Failed to update interview:", response);
     }
+  } catch (error) {
+    console.error("Error updating form:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-    const data = new FormData();
-    if (formData.logo) {
-      data.append("logo", formData.logo);
-    }
-
-    data.append("company", formData.company);
-    data.append("jobTitle", formData.jobTitle);
-    data.append("date", formData.date);
-    data.append("contact", formData.contact);
-    data.append("email", formData.email);
-    data.append("location", formData.location);
-    data.append("duration", formData.duration);
-    data.append("experience", formData.experience);
-    data.append("details", formData.details);
-    data.append("information", formData.information);
-
-    const skillsArray = formData.skills
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter((skill) => skill.length > 0);
-
-    skillsArray.forEach((skill) => {
-      data.append("skills", skill);
-    });
-
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/interviews/${id}`, {
-        method: "PUT",
-        body: data,
-      });
-
-      if (response.ok) {
-        console.log("Interview updated successfully");
-        navigate("/interviewcards");
-      } else {
-        console.error("Failed to update interview:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error updating form:", error);
-    }
-  };
 
   return (
     <Container className="mt-4 mb-4">
