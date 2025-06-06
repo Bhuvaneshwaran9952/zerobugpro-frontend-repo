@@ -13,7 +13,7 @@ const apiClient = axios.create({
 // Specific functions — no need to pass URLs in components
 export const getAllInterview = async () => {
   const res = await apiClient.get("/interviews");
-  return res.data || [];  // fallback to empty array if data undefined
+  return res.data || []; 
 };
 
 export const getInterviewById = async (id) => {

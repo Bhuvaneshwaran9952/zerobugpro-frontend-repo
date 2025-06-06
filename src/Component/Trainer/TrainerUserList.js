@@ -23,17 +23,22 @@ const TrainerUserList = () => {
   };
 
   const handleEdit = (id) => navigate(`/trainerupdate/${id}`);
+
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this trainer?")) return;
+    const confirmed = window.confirm("Are you sure you want to delete this trainer?");
+    if (!confirmed) return;
+
     try {
-      const response = await deleteTrainer(id);
-      const updatedData = data.filter(item => item.id !== id);
-      setData(updatedData);
-      setCurrentPage(1); // reset to first page
+      await deleteTrainer(id); // Sends DELETE request to backend
+      setData(prevData => prevData.filter(item => item.id !== id)); // Update UI
+      setCurrentPage(1); // Optional: Reset pagination
     } catch (error) {
-      console.error("Error deleting data:", error);
+      console.error("Error deleting trainer:", error);
+      alert("Failed to delete trainer. Please try again.");
     }
   };
+
+
   const handleAssign = (id) => navigate(`/trainerassign/${id}`);
   const handleView = (id) => navigate(`/viewpage/${id}`);
 

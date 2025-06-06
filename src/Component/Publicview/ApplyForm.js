@@ -3,6 +3,7 @@ import { Container, Card, CloseButton, Form, Row, Col, Button, Alert } from "rea
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { createApply } from "../Trainer/applyServer";
 
 const ApplyForm = () => {
   const [formValue, setFormValue] = useState({
@@ -74,22 +75,15 @@ const ApplyForm = () => {
       formData.append("experience", formValue.experience);
       formData.append('current_salary', formValue.currentsalary);
       formData.append('expected_salary', formValue.expatsalary);
-  
+
       try {
-        const response = await axios.post("http://localhost:8000/apply/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-  
+        const response = await createApply(formData); 
         console.log("Success:", response.data);
         setSubmitted(true);
-  
-        // Wait 2 seconds then navigate
+
         setTimeout(() => {
           navigate('/publicview');
         }, 2000);
-  
       } catch (error) {
         console.error("Error submitting form:", error);
       }
@@ -97,6 +91,7 @@ const ApplyForm = () => {
       setSubmitted(false);
     }
   };
+
 
   return (
     <Container className="mt-4">
